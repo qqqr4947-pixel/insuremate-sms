@@ -41,6 +41,7 @@
     </string-array>
     <string-array name="language_entries">
         <item>@string/language_system</item>
+        <item>한국어</item>
         <item>English</item>
         <item>العربية</item>
         <item>Русский</item>
@@ -48,6 +49,7 @@
     </string-array>
     <string-array name="language_values">
         <item></item>
+        <item>ko</item>
         <item>en</item>
         <item>ar</item>
         <item>ru</item>

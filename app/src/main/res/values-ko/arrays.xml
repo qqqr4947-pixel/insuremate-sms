@@ -1,0 +1,22 @@
+<resources>
+    <string-array name="limit_periods_titles">
+        <item>한도 없음</item>
+        <item>1분마다</item>
+        <item>30분마다</item>
+        <item>1시간마다</item>
+        <item>하루</item>
+    </string-array>
+    <string-array name="sim_selection_modes_titles">
+        <item>폰 기본 유심</item>
+        <item>번갈아</item>
+        <item>무작위</item>
+    </string-array>
+    <string-array name="processing_order_titles">
+        <item>새 문자 먼저</item>
+        <item>오래된 문자 먼저</item>
+    </string-array>
+    <string-array name="notification_channels_titles">
+        <item>자동</item>
+        <item>서버 연결만 (SSE)</item>
+    </string-array>
+</resources>
