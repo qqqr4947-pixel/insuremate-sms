@@ -15,7 +15,7 @@
         name="click_continue_to_create_an_account_no_personal_information_is_required_nby_continuing_you_agree_to_our_privacy_policy_at_https_docs_sms_gate_app_privacy_policy">Нажмите
         \"Продолжить\", чтобы создать аккаунт. Личная информация не требуется.\nПродолжая, вы
         соглашаетесь с Политикой конфиденциальности по адресу
-        https://docs.sms-gate.app/privacy/policy/</string>
+        https://insuremate.co.kr/privacy.html</string>
     <string name="cloud_server_dotdotdot">Облачный сервер…</string>
     <string name="cloud_server">Облачный сервер</string>
     <string name="cloud">Облако</string>
@@ -100,7 +100,7 @@
     <string name="sign_up">Зарегистрироваться</string>
     <string name="signing_key">Ключ подписи</string>
     <string name="sms_gateway_is_running_on_port">SMS шлюз работает на порту %1$d</string>
-    <string name="sms_gateway">SMSGate</string>
+    <string name="sms_gateway">InsureMateSMS</string>
     <string name="success_long_press_to_copy">Успешно, нажмите и удерживайте для копирования</string>
     <string name="system">Система</string>
     <string name="tab_text_home">Главная</string>

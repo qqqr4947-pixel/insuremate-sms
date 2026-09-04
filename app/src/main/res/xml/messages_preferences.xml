@@ -32,11 +32,13 @@
         app:summary="@string/set_maximum_value_to_activate"
         app:title="@string/delays_seconds">
         <EditTextPreference
+            android:defaultValue="6"
             app:key="messages.send_interval_min"
             app:title="@string/minimum"
             app:icon="@drawable/ic_timer"
             app:useSimpleSummaryProvider="true" />
         <EditTextPreference
+            android:defaultValue="9"
             app:icon="@drawable/ic_timer"
             app:key="messages.send_interval_max"
             app:title="@string/maximum"
@@ -45,7 +47,7 @@
 
     <PreferenceCategory app:title="@string/limits">
         <DropDownPreference
-            android:defaultValue="Disabled"
+            android:defaultValue="PerDay"
             android:entries="@array/limit_periods_titles"
             android:entryValues="@array/limit_periods_values"
             android:icon="@drawable/ic_period"
@@ -53,7 +55,7 @@
             app:title="@string/period"
             app:useSimpleSummaryProvider="true" />
         <EditTextPreference
-            android:defaultValue="0"
+            android:defaultValue="300"
             android:icon="@drawable/ic_send"
             android:key="messages.limit_value"
             app:title="@string/messages_count"

@@ -56,7 +56,7 @@ class GatewaySettings(
         private const val PRIVATE_TOKEN = "private_token"
         private const val NOTIFICATION_CHANNEL = "notification_channel"
 
-        const val PUBLIC_URL = "https://api.sms-gate.app/mobile/v1"
+        const val PUBLIC_URL = "https://sms.insuremate.co.kr/api/mobile/v1"
     }
 
     override fun export(): Map<String, *> {

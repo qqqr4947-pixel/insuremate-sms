@@ -81,6 +81,12 @@
             android:title="@string/app_version_build"
             app:persistent="false"
             app:selectable="false" />
+        <Preference
+            android:key="transient.about_origin"
+            android:selectable="false"
+            android:summary="@string/about_origin_summary"
+            android:title="@string/about_origin_title"
+            app:persistent="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>

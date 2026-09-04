@@ -40,17 +40,18 @@ class MessagesSettings(
                 else -> min..max
             }
         }
+    // InsureMate defaults: 6..9 s between messages (~8/min) and 300 per day, unless the user or server sets otherwise
     private val sendIntervalMin: Int
-        get() = storage.get<Int>(SEND_INTERVAL_MIN) ?: 0
+        get() = storage.get<Int>(SEND_INTERVAL_MIN) ?: 6
     private val sendIntervalMax: Int?
-        get() = storage.get<Int>(SEND_INTERVAL_MAX)
+        get() = storage.get<Int>(SEND_INTERVAL_MAX) ?: 9
 
     val limitEnabled: Boolean
         get() = limitValue > 0 && limitPeriod != Period.Disabled
     val limitPeriod: Period
-        get() = storage.get<Period>(LIMIT_PERIOD) ?: Period.Disabled
+        get() = storage.get<Period>(LIMIT_PERIOD) ?: Period.PerDay
     val limitValue: Int
-        get() = storage.get(LIMIT_VALUE) ?: 0
+        get() = storage.get(LIMIT_VALUE) ?: 300
 
     val simSelectionMode: SimSelectionMode
         get() = storage.get<SimSelectionMode>(SIM_SELECTION_MODE) ?: SimSelectionMode.OSDefault

@@ -4,6 +4,8 @@
     <string name="api_url">API URL</string>
     <string name="app_name" translatable="false">InsureMateSMS</string>
     <string name="app_version_build">App version (build)</string>
+    <string name="about_origin_title">Based on SMSGate (capcom6) · Apache-2.0</string>
+    <string name="about_origin_summary">Changed: name, icon, colors, Korean, defaults</string>
     <string name="battery_optimization_already_disabled">Battery optimization already disabled</string>
     <string name="battery_optimization_is_not_supported_on_this_device">Battery optimization is not
         supported on this device</string>
@@ -48,7 +50,7 @@
     <string name="listening_to_the_server_events">Listening to server events…</string>
     <string name="local_address">Local address</string>
     <string name="local_server_dotdotdot">Local Server…</string>
-    <string name="local_sms_gateway_notifications">Local SMSGate notifications</string>
+    <string name="local_sms_gateway_notifications">Local InsureMateSMS notifications</string>
     <string name="local">Local</string>
     <string name="login_code_expires">Login Code, expires %1$s</string>
     <string name="login_code">Login Code</string>
@@ -91,7 +93,7 @@
     <string name="server_address">Server address</string>
     <string name="server">Server</string>
     <string name="set_maximum_value_to_activate">Set maximum value to activate</string>
-    <string name="settings_address_is_sms_capcom_me" translatable="false">api.sms-gate.app</string>
+    <string name="settings_address_is_sms_capcom_me" translatable="false">sms.insuremate.co.kr</string>
     <string name="settings_changed_via_api_restart_the_app_to_apply_changes">Settings changed via
         API. Restart the app to apply changes.</string>
     <string name="settings_local_address_is" translatable="false">&lt;a href>%1$s:%2$d&lt;/a></string>
@@ -104,8 +106,8 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
     <string name="signing_key">Signing Key</string>
-    <string name="sms_gateway_is_running_on_port">SMSGate is running on port %1$d</string>
-    <string name="sms_gateway">SMSGate</string>
+    <string name="sms_gateway_is_running_on_port">InsureMateSMS is running on port %1$d</string>
+    <string name="sms_gateway">InsureMateSMS</string>
     <string name="sms" translatable="false">sms</string>
     <string name="success_long_press_to_copy">Success, long press to copy</string>
     <string name="system">System</string>
