@@ -13,7 +13,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "me.capcom.smsgateway"
+        applicationId "kr.co.insuremate.sms"
         minSdk 21
         targetSdk 33
         versionCode 1
