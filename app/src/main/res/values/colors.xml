@@ -34,5 +34,7 @@
     <color name="im_tint_orange_bg">#FFFFF4E1</color>
     <color name="im_tint_orange_fg">#FFD77E02</color>
 
-    <color name="im_track">#FFE5E8EB</color>
+    <!-- 게이지 바닥·스위치 꺼짐 = 키트 tui-press (시안 실측 #F2F4F6 · im_line 이 아니다) -->
+    <color name="im_track">#FFF2F4F6</color>
+    <color name="im_press">#FFF2F4F6</color>
 </resources>

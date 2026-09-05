@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오늘 보냄 게이지 — 바닥 + 파란 막대 (키트 .tui-gauge) -->
+<!-- 오늘 보냄 게이지 — 시안 실측: 높이 6 · 바닥 tui-press · 막대 파랑 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">

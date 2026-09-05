@@ -25,10 +25,10 @@
         android:paddingEnd="@dimen/im_page">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="@dimen/im_logo"
+            android:layout_height="@dimen/im_logo"
             android:contentDescription="@string/app_name"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@drawable/ic_im_logo" />
 
         <TextView
             android:layout_width="0dp"
@@ -45,13 +45,12 @@
         <TextView
             android:id="@+id/chipStatus"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/im_chip_h"
             android:background="@drawable/bg_im_chip"
             android:backgroundTint="@color/im_hold_bg"
-            android:paddingStart="10dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
+            android:gravity="center"
+            android:paddingStart="@dimen/im_chip_pad"
+            android:paddingEnd="@dimen/im_chip_pad"
             android:textColor="@color/im_hold_fg"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -115,8 +114,11 @@
                         android:layout_marginTop="6dp"
                         android:background="@drawable/bg_im_field"
                         android:ellipsize="end"
+                        android:gravity="center_vertical"
                         android:lines="1"
-                        android:padding="14dp"
+                        android:minHeight="@dimen/im_btn_h"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
                         android:textColor="@color/im_body"
                         android:textSize="15sp"
                         tools:text="sms.insuremate.co.kr" />
@@ -144,7 +146,7 @@
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editConnectCode"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="@dimen/im_btn_h"
                             android:hint="@string/im_connect_code_hint"
                             android:inputType="textCapCharacters"
                             android:textSize="15sp" />
@@ -162,14 +164,16 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonConnect"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="@dimen/im_btn_h"
                         android:layout_marginTop="14dp"
                         android:backgroundTint="@color/im_blue"
+                        android:letterSpacing="0"
                         android:text="@string/im_connect_button"
+                        android:textAllCaps="false"
                         android:textColor="@color/white"
-                        android:textSize="15sp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="@dimen/im_btn_r"
                         app:elevation="0dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -200,8 +204,8 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="@dimen/im_icon_chip"
+                            android:layout_height="@dimen/im_icon_chip"
                             android:background="@drawable/bg_im_icon"
                             android:backgroundTint="@color/im_tint_green_bg"
                             android:contentDescription="@string/device"
@@ -310,14 +314,13 @@
                     <TextView
                         android:id="@+id/textConnectionStatus"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/im_chip_h"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/bg_im_chip"
                         android:backgroundTint="@color/im_danger_bg"
-                        android:paddingStart="10dp"
-                        android:paddingTop="5dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="5dp"
+                        android:gravity="center"
+                        android:paddingStart="@dimen/im_chip_pad"
+                        android:paddingEnd="@dimen/im_chip_pad"
                         android:textColor="@color/im_danger_fg"
                         android:textSize="12sp"
                         android:visibility="gone"
@@ -330,14 +333,19 @@
                         android:layout_marginTop="@dimen/im_gap"
                         android:background="@color/im_line" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/switchService"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/im_gap"
+                        android:letterSpacing="0"
+                        android:paddingStart="10dp"
+                        android:switchMinWidth="@dimen/im_switch_w"
                         android:text="@string/im_sending_on"
                         android:textColor="@color/im_ink"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:thumb="@drawable/im_switch_thumb"
+                        app:track="@drawable/im_switch_track" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -361,8 +369,8 @@
                     android:padding="@dimen/im_card_pad">
 
                     <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/im_icon_chip"
+                        android:layout_height="@dimen/im_icon_chip"
                         android:background="@drawable/bg_im_icon"
                         android:backgroundTint="@color/im_tint_orange_bg"
                         android:contentDescription="@string/im_permission_title"
@@ -398,14 +406,22 @@
                         android:id="@+id/buttonPermission"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/im_btn_sm_h"
                         android:layout_marginStart="8dp"
                         android:backgroundTint="@color/im_blue_tint"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
                         android:text="@string/im_permission_button"
+                        android:textAllCaps="false"
                         android:textColor="@color/im_on_tint"
-                        android:textSize="13sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
-                        app:cornerRadius="10dp" />
+                        app:cornerRadius="@dimen/im_btn_sm_r" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -588,32 +604,47 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/switchUseRemoteServer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/im_gap"
+                        android:letterSpacing="0"
+                        android:paddingStart="10dp"
+                        android:switchMinWidth="@dimen/im_switch_w"
                         android:text="@string/im_use_cloud"
                         android:textColor="@color/im_body"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:thumb="@drawable/im_switch_thumb"
+                        app:track="@drawable/im_switch_track" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/switchUseLocalServer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/im_gap"
+                        android:letterSpacing="0"
+                        android:paddingStart="10dp"
+                        android:switchMinWidth="@dimen/im_switch_w"
                         android:text="@string/im_use_local"
                         android:textColor="@color/im_body"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:thumb="@drawable/im_switch_thumb"
+                        app:track="@drawable/im_switch_track" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/switchAutostart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/im_gap"
+                        android:letterSpacing="0"
+                        android:paddingStart="10dp"
+                        android:switchMinWidth="@dimen/im_switch_w"
                         android:text="@string/settings_start_on_boot"
                         android:textColor="@color/im_body"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:thumb="@drawable/im_switch_thumb"
+                        app:track="@drawable/im_switch_track" />
 
                     <LinearLayout
                         android:id="@+id/layoutRemoteServer"

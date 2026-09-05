@@ -29,4 +29,5 @@
     <color name="im_tint_orange_fg">#FFD9A257</color>
 
     <color name="im_track">#FF2E2E36</color>
+    <color name="im_press">#FF2E2E36</color>
 </resources>

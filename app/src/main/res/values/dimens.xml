@@ -5,6 +5,17 @@
     <dimen name="im_page">16dp</dimen>
     <dimen name="im_card_pad">16dp</dimen>
     <dimen name="im_gap">12dp</dimen>
-    <dimen name="im_radius">16dp</dimen>
+    <dimen name="im_radius">20dp</dimen>        <!-- 시안 실측: 카드 라운딩 20 (16 이 아니다) -->
     <dimen name="im_row_min">52dp</dimen>
+    <!-- 부품 규격 — 시안 ⑦ 을 재서 나온 값 (mockup/_measure-sian7.mjs) -->
+    <dimen name="im_logo">32dp</dimen>          <!-- 앱바 로고 32 -->
+    <dimen name="im_chip_h">24dp</dimen>        <!-- 칩 높이 24 · 좌우 10 -->
+    <dimen name="im_chip_pad">10dp</dimen>
+    <dimen name="im_btn_h">52dp</dimen>         <!-- 큰 버튼·입력칸 높이 52 · 라운딩 12 -->
+    <dimen name="im_btn_r">12dp</dimen>
+    <dimen name="im_btn_sm_h">36dp</dimen>      <!-- 작은 버튼 36 · 라운딩 8 · 좌우 14 -->
+    <dimen name="im_btn_sm_r">8dp</dimen>
+    <dimen name="im_icon_chip">40dp</dimen>     <!-- 아이콘 칩 40 원형 -->
+    <dimen name="im_switch_w">46dp</dimen>      <!-- 스위치 46 × 27 · 손잡이 21 · 안쪽 3 -->
+    <dimen name="im_switch_h">27dp</dimen>
 </resources>
