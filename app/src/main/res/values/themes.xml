@@ -16,6 +16,23 @@
         <item name="android:colorBackground">@color/im_bg</item>
         <item name="android:textColorPrimary">@color/im_ink</item>
         <item name="android:textColorSecondary">@color/im_sub</item>
+        <!-- 설정 화면(Preference)도 우리 것으로. 이걸 안 주면 안드로이드 기본 목록 모양이 그대로 나온다
+             (박 대표 2026-09-06 「설정도 동일 문자도 동일」). -->
+        <item name="preferenceTheme">@style/Im.PreferenceTheme</item>
+    </style>
+
+    <!-- ══ 설정 화면 — 인슈어 UI ═══════════════════════════════════════════
+         원본은 안드로이드 기본 Preference 모양이었다. 부품을 새로 만들지 않고
+         «크기·색·여백»만 우리 값으로 맞춘다. -->
+    <style name="Im.PreferenceTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="preferenceCategoryTitleTextAppearance">@style/Im.Pref.CategoryTitle</item>
+    </style>
+
+    <!-- 묶음 제목(「한도」·「기록」 같은 머리글) = 키트 .tui-label — 파랑이 아니라 회색이다 -->
+    <style name="Im.Pref.CategoryTitle" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">@color/im_sub</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Settings screen styles -->
@@ -35,12 +52,42 @@
         <item name="android:layout_margin">4dp</item>
     </style>
 
-    <!-- Compact filter chip for stats panels -->
+    <!-- 거르개 칩 — 인슈어 키트 .tui-filter-chip (높이 32 · 알약 · 고르면 파랑 틴트) -->
     <style name="CompactFilterChip" parent="Widget.MaterialComponents.Chip.Filter">
-        <item name="chipMinHeight">28dp</item>
-        <item name="chipCornerRadius">14dp</item>
-        <item name="chipMinTouchTargetSize">32dp</item>
-        <item name="android:textSize">12sp</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="chipCornerRadius">999dp</item>
+        <item name="chipMinTouchTargetSize">36dp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/im_chip_text</item>
+        <item name="chipBackgroundColor">@color/im_chip_bg</item>
+        <item name="chipStrokeWidth">0dp</item>
         <item name="checkedIconVisible">false</item>
+        <item name="chipStartPadding">12dp</item>
+        <item name="chipEndPadding">12dp</item>
+    </style>
+
+    <!-- 문자 한 줄 — 받는 사람(제목) / 내용(설명) / 상태 칩 -->
+    <style name="Im.RowKey" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/im_ink</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Im.RowSub" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/im_sub</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Im.Chip" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">@dimen/im_chip_h</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/im_chip_pad</item>
+        <item name="android:paddingEnd">@dimen/im_chip_pad</item>
     </style>
 </resources>

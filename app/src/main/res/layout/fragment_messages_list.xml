@@ -1,44 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 문자 — 인슈어 UI (2026-09-06 · 박 대표 「문자도 동일」)
+     바뀐 것: 카드 라운딩 20·그림자 0 · 지면 여백 16 · 거르개 칩은 키트 모양 · 목록도 카드 «안»에.
+     기능은 그대로다(거르개 여섯 · 목록 · 누르면 자세히). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/im_bg"
     android:orientation="vertical"
     tools:context=".ui.MessagesListFragment">
 
-    <!-- Fixed top panel with queue statistics -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/statisticsCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
+        android:layout_marginStart="@dimen/im_page"
+        android:layout_marginEnd="@dimen/im_page"
+        android:layout_marginTop="@dimen/im_page"
+        app:cardBackgroundColor="@color/im_surface"
+        app:cardCornerRadius="@dimen/im_radius"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp">
+            android:padding="@dimen/im_card_pad">
 
             <TextView
                 android:id="@+id/queueTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/im_gap"
                 android:text="@string/queue_status"
-                android:textSize="14sp"
+                android:textColor="@color/im_ink"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <!-- Filter chips with counts -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/filterChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:chipSpacingHorizontal="4dp"
-                app:chipSpacingVertical="0dp"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp"
                 app:singleSelection="true"
                 app:selectionRequired="true">
 
@@ -47,56 +53,72 @@
                     style="@style/CompactFilterChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="All (0)" />
+                    tools:text="전체 0" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filterPending"
                     style="@style/CompactFilterChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Pending (0)" />
+                    tools:text="기다리는 중 0" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filterSent"
                     style="@style/CompactFilterChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Sent (0)" />
+                    tools:text="보냄 0" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filterDelivered"
                     style="@style/CompactFilterChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Delivered (0)" />
+                    tools:text="도착 0" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filterFailed"
                     style="@style/CompactFilterChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Failed (0)" />
+                    tools:text="못 보냄 0" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/filterCancelled"
                     style="@style/CompactFilterChip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Cancelled (0)" />
+                    tools:text="취소 0" />
 
             </com.google.android.material.chip.ChipGroup>
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-
-    <!-- RecyclerView for messages -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <!-- 목록도 카드 «안»에 담는다 — 바탕 위에 줄이 맨몸으로 떠 있으면 우리 화면이 아니다 -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_message" />
+        android:layout_marginStart="@dimen/im_page"
+        android:layout_marginEnd="@dimen/im_page"
+        android:layout_marginTop="@dimen/im_gap"
+        android:layout_marginBottom="@dimen/im_page"
+        app:cardBackgroundColor="@color/im_surface"
+        app:cardCornerRadius="@dimen/im_radius"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_message" />
+
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
