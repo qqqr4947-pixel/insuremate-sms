@@ -37,4 +37,7 @@
     <!-- 게이지 바닥·스위치 꺼짐 = 키트 tui-press (시안 실측 #F2F4F6 · im_line 이 아니다) -->
     <color name="im_track">#FFF2F4F6</color>
     <color name="im_press">#FFF2F4F6</color>
+
+    <!-- 상태바 — 안드로이드 6 이상은 values-v23 이 im_surface 로 덮는다. 그 아래는 글자를 검게 못 바꾸므로 파랑 유지 -->
+    <color name="im_status_bar">@color/im_blue_strong</color>
 </resources>

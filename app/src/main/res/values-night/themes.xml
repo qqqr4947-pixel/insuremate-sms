@@ -10,12 +10,15 @@
         <item name="colorSecondary">@color/im_blue</item>
         <item name="colorSecondaryVariant">@color/im_blue_strong</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- 상태바 = 지면색. 다크는 바탕이 어두우니 글자는 흰색 그대로(windowLightStatusBar=false) -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/im_status_bar</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <!-- 인슈어메이트 지면 -->
         <item name="android:windowBackground">@color/im_bg</item>
         <item name="android:colorBackground">@color/im_bg</item>
         <item name="android:textColorPrimary">@color/im_ink</item>
         <item name="android:textColorSecondary">@color/im_sub</item>
+        <!-- 낮 판과 같은 항목 — 이 파일이 테마를 통째로 덮으므로 여기 빠지면 다크에서만 설정 화면이 기본 모양이 된다 -->
+        <item name="preferenceTheme">@style/Im.PreferenceTheme</item>
     </style>
 </resources>

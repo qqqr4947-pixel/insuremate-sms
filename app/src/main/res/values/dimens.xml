@@ -16,6 +16,9 @@
     <dimen name="im_btn_sm_h">36dp</dimen>      <!-- 작은 버튼 36 · 라운딩 8 · 좌우 14 -->
     <dimen name="im_btn_sm_r">8dp</dimen>
     <dimen name="im_icon_chip">40dp</dimen>     <!-- 아이콘 칩 40 원형 -->
-    <dimen name="im_switch_w">46dp</dimen>      <!-- 스위치 46 × 27 · 손잡이 21 · 안쪽 3 -->
+    <!-- 스위치 48 × 27 · 손잡이 21 · 안쪽 3. 시안은 46 이지만 SwitchCompat 은 «손잡이 두 개 + 안쪽 여백»(21×2+3×2=48)
+         보다 좁아질 수 없다(공기계 실측 2026-09-06 · 46 을 고집하면 바탕이 잘린다). 2dp 차이는 눈에 안 보인다. -->
+    <dimen name="im_switch_w">48dp</dimen>
     <dimen name="im_switch_h">27dp</dimen>
+    <dimen name="im_switch_inset">3dp</dimen>
 </resources>

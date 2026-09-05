@@ -12,13 +12,14 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
 import me.capcom.smsgateway.BuildConfig
 import me.capcom.smsgateway.MainActivity
 import me.capcom.smsgateway.R
 import me.capcom.smsgateway.helpers.LocaleHelper
+import me.capcom.smsgateway.ui.settings.BasePreferenceFragment
 
-class SettingsFragment : PreferenceFragmentCompat() {
+/** 설정 첫 화면도 하위 설정 화면과 같은 바탕·카드를 쓴다(BasePreferenceFragment) */
+class SettingsFragment : BasePreferenceFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)

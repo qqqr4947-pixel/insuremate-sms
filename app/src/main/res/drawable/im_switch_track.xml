@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 스위치 바탕 — 시안 실측 46×27 · 라운딩 999 · 켜짐 파랑 / 꺼짐 tui-press -->
+<!-- 스위치 바탕 — 48×27(시안 46 · 이유는 dimens.xml) · 라운딩 999 · 켜짐 파랑 / 꺼짐 tui-press.
+     좌우 padding 3dp = 손잡이가 바탕 끝에서 3dp 안쪽에 멈추는 자리(SwitchCompat 은 바탕의 padding 안에서 손잡이를 움직인다). -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/im_blue" />
             <corners android:radius="999dp" />
             <size android:width="@dimen/im_switch_w" android:height="@dimen/im_switch_h" />
+            <padding android:left="@dimen/im_switch_inset" android:right="@dimen/im_switch_inset" />
         </shape>
     </item>
     <item>
@@ -13,6 +15,7 @@
             <solid android:color="@color/im_press" />
             <corners android:radius="999dp" />
             <size android:width="@dimen/im_switch_w" android:height="@dimen/im_switch_h" />
+            <padding android:left="@dimen/im_switch_inset" android:right="@dimen/im_switch_inset" />
         </shape>
     </item>
 </selector>

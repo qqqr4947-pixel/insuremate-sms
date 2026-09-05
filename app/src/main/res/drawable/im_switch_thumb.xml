@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 스위치 손잡이 — 시안 실측 21dp 흰 원 · 바탕 안쪽 3dp -->
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:insetBottom="3dp"
-    android:insetLeft="3dp"
-    android:insetRight="3dp"
-    android:insetTop="3dp">
-    <shape android:shape="oval">
-        <solid android:color="@color/white" />
-        <size android:width="21dp" android:height="21dp" />
-    </shape>
-</inset>
+<!--
+  스위치 손잡이 — 시안 실측 21dp 흰 원 · 바탕 안쪽 3dp.
+
+  왜 inset 이 아니라 layer-list 인가 (공기계 실측 2026-09-06 · 바탕이 반쯤 잘려 보였다):
+  SwitchCompat 은 손잡이의 «padding» 만큼 자리를 넓혀 주고, 동시에 «optical inset» 만큼 바탕을 좁힌다.
+  inset 드로어블은 둘 다 3dp 로 답해서 여백이 두 번 빠졌다.
+  layer-list 는 optical inset 을 답하지 않고, 안쪽 shape 의 padding 만 답한다 → 자리 27 · 원 21 · 바탕 온전.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:bottom="@dimen/im_switch_inset"
+        android:left="@dimen/im_switch_inset"
+        android:right="@dimen/im_switch_inset"
+        android:top="@dimen/im_switch_inset">
+        <shape android:shape="oval">
+            <solid android:color="@color/white" />
+            <size android:width="21dp" android:height="21dp" />
+            <padding
+                android:bottom="@dimen/im_switch_inset"
+                android:left="@dimen/im_switch_inset"
+                android:right="@dimen/im_switch_inset"
+                android:top="@dimen/im_switch_inset" />
+        </shape>
+    </item>
+</layer-list>
