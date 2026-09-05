@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceGroup
+import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import me.capcom.smsgateway.R
 
@@ -40,7 +41,8 @@ class ImCardDecoration(
         for (i in 0 until group.preferenceCount) {
             val p = group.getPreference(i)
             if (p.isVisible) into.add(p)
-            if (p is PreferenceGroup && p.isOnSameScreenAsChildren) flatten(p, into)
+            // 부품의 isOnSameScreenAsChildren 은 밖에서 못 부른다 — 값은 «PreferenceScreen 만 false» 다
+            if (p is PreferenceGroup && p !is PreferenceScreen) flatten(p, into)
         }
     }
 
