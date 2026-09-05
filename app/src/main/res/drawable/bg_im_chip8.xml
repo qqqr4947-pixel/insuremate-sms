@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 작은 버튼 바탕 — 시안 실측 라운딩 8 (권한 켜기) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFFFFFF" />
+    <corners android:radius="@dimen/im_btn_sm_r" />
+</shape>
