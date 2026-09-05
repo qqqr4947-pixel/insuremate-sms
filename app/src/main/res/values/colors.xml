@@ -3,11 +3,36 @@
     <color name="black">#FF000000</color>
     <color name="grey_700">#FF616161</color>
     <color name="progressBarOverlay">#33FFFFFF</color>
-    <!-- InsureMate UI kit (css/toss-ui.css): tui-blue / tui-blue-strong, light and dark -->
-    <color name="im_blue">#FF3182F6</color>
-    <color name="im_blue_strong">#FF1B64DA</color>
-    <color name="im_blue_dark">#FF4593FC</color>
-    <color name="im_blue_dark_strong">#FF5CA0FF</color>
     <color name="red_800">#FFD32F2F</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ══ InsureMate UI 키트 (css/toss-ui.css 의 tui 토큰을 그대로 옮긴 값) ══
+         다크 판은 values-night/colors.xml 에 같은 이름으로 있다. 여기서 색을 «지어내지» 않는다. -->
+    <color name="im_bg">#FFF2F4F6</color>
+    <color name="im_surface">#FFFFFFFF</color>
+    <color name="im_ink">#FF191F28</color>
+    <color name="im_body">#FF4E5968</color>
+    <color name="im_sub">#FF6B7684</color>
+    <color name="im_line">#FFE5E8EB</color>
+
+    <color name="im_blue">#FF3182F6</color>
+    <color name="im_blue_strong">#FF1B64DA</color>
+    <color name="im_blue_tint">#FFE8F3FF</color>
+    <color name="im_on_tint">#FF1B64DA</color>
+
+    <color name="im_ok_bg">#FFE7F7EF</color>
+    <color name="im_ok_fg">#FF09804A</color>
+    <color name="im_warn_bg">#FFFFF4E1</color>
+    <color name="im_warn_fg">#FFAD5B00</color>
+    <color name="im_danger_bg">#FFFDECEE</color>
+    <color name="im_danger_fg">#FFCE2C41</color>
+    <color name="im_hold_bg">#FFF2F4F6</color>
+    <color name="im_hold_fg">#FF4E5968</color>
+
+    <color name="im_tint_green_bg">#FFE7F7EF</color>
+    <color name="im_tint_green_fg">#FF0BA05C</color>
+    <color name="im_tint_orange_bg">#FFFFF4E1</color>
+    <color name="im_tint_orange_fg">#FFD77E02</color>
+
+    <color name="im_track">#FFE5E8EB</color>
 </resources>

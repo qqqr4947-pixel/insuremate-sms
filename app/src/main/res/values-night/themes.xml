@@ -1,16 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme (다크). 색 «값»은 values-night/colors.xml 이 갈아 끼우므로
+         여기서는 낮 판과 같은 이름(@color/im_blue …)을 쓴다 — 이름이 갈리면 한쪽만 고치는 사고가 난다. -->
     <style name="Theme.SmsGateway" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/im_blue_dark</item>
-        <item name="colorPrimaryVariant">@color/im_blue_dark_strong</item>
+        <item name="colorPrimary">@color/im_blue</item>
+        <item name="colorPrimaryVariant">@color/im_blue_strong</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/im_blue_dark</item>
-        <item name="colorSecondaryVariant">@color/im_blue_dark_strong</item>
+        <item name="colorSecondary">@color/im_blue</item>
+        <item name="colorSecondaryVariant">@color/im_blue_strong</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <!-- 인슈어메이트 지면 -->
+        <item name="android:windowBackground">@color/im_bg</item>
+        <item name="android:colorBackground">@color/im_bg</item>
+        <item name="android:textColorPrimary">@color/im_ink</item>
+        <item name="android:textColorSecondary">@color/im_sub</item>
     </style>
 </resources>

@@ -44,6 +44,11 @@ interface MessagesDao {
     @Query("SELECT * FROM message ORDER BY createdAt DESC LIMIT :limit")
     fun selectLast(limit: Int): LiveData<List<Message>>
 
+    /** 홈 화면 「최근 보낸 문자」 — 받는 번호까지 같이 (InsureMate) */
+    @Transaction
+    @Query("SELECT *, `rowid` FROM message ORDER BY createdAt DESC LIMIT :limit")
+    fun selectLastWithRecipients(limit: Int): LiveData<List<MessageWithRecipients>>
+
     @Query("SELECT * FROM message WHERE ((:state IS NULL AND state NOT IN ('Processed', 'Cancelling')) OR state = :state) ORDER BY createdAt DESC LIMIT :limit")
     fun selectLastFiltered(limit: Int, state: String? = null): LiveData<List<Message>>
 

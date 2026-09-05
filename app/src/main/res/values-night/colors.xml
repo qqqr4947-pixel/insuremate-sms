@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ══ InsureMate UI 키트 다크 판 (css/toss-ui.css 의 [data-theme="dark"] 블록) ══
+         이름은 values/colors.xml 과 같다 — 폰이 다크면 안드로이드가 이 값으로 바꿔 준다. -->
+    <color name="im_bg">#FF101013</color>
+    <color name="im_surface">#FF17171C</color>
+    <color name="im_ink">#FFE4E6EA</color>
+    <color name="im_body">#FFC3C6CE</color>
+    <color name="im_sub">#FF8B95A1</color>
+    <color name="im_line">#FF2E2E36</color>
+
+    <color name="im_blue">#FF4593FC</color>
+    <color name="im_blue_strong">#FF5CA0FF</color>
+    <color name="im_blue_tint">#FF1E2B40</color>
+    <color name="im_on_tint">#FF79B0FF</color>
+
+    <color name="im_ok_bg">#FF152D26</color>
+    <color name="im_ok_fg">#FF3FBE83</color>
+    <color name="im_warn_bg">#FF362818</color>
+    <color name="im_warn_fg">#FFD9A257</color>
+    <color name="im_danger_bg">#FF381C24</color>
+    <color name="im_danger_fg">#FFE8788A</color>
+    <color name="im_hold_bg">#FF26262C</color>
+    <color name="im_hold_fg">#FF9CA3AD</color>
+
+    <color name="im_tint_green_bg">#FF152D26</color>
+    <color name="im_tint_green_fg">#FF3FBE83</color>
+    <color name="im_tint_orange_bg">#FF362818</color>
+    <color name="im_tint_orange_fg">#FFD9A257</color>
+
+    <color name="im_track">#FF2E2E36</color>
+</resources>
