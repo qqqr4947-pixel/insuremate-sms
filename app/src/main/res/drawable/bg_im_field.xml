@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 읽기 전용 칸 (서버 주소처럼 «이미 채워져 있는» 값) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/im_hold_bg" />
+    <corners android:radius="12dp" />
+</shape>

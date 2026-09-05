@@ -1,262 +1,733 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  홈 — 인슈어메이트 UI 키트 모양 (시안 ⑦ · mockup/_sian-sms-phone.html?v=7)
+  여백 자: 앱바 56 · 지면 16 · 카드 안 16 · 카드 사이 12 · 행 최소 52
+  원본(capcom6)의 «폰 안 서버 / 내 서버» 카드 둘 구조를 바꾼 것이라, 원본에 있던 조작은
+  하나도 없애지 않고 자리만 옮겼다 — 자세한 값은 「고급」 카드 안에 그대로 있다.
+-->
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/im_bg"
     android:orientation="vertical"
     tools:context=".ui.HomeFragment">
 
-    <TextView
-        android:id="@+id/textConnectionStatus"
+    <!-- ── 앱바 56dp ── -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:background="@drawable/rounded_background"
-        android:backgroundTint="@color/connection_status_background"
-        android:enabled="true"
-        android:gravity="center"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:visibility="gone"
-        tools:text="@string/internet_connection_available" />
+        android:layout_height="@dimen/im_appbar"
+        android:background="@color/im_surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/im_page"
+        android:paddingEnd="@dimen/im_page">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher_round" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@string/app_name"
+            android:textColor="@color/im_ink"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/chipStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_im_chip"
+            android:backgroundTint="@color/im_hold_bg"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:textColor="@color/im_hold_fg"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="@string/im_state_connected" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/im_line" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/im_page">
 
+            <!-- ══════ 연결 전 — 내 서버에 연결 ══════ -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardConnect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                app:cardCornerRadius="16dp"
-                app:contentPadding="8dp">
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/imageLocalServer"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="4dp"
-                        android:src="@drawable/ic_local_server"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/im_card_pad">
 
                     <TextView
-                        android:id="@+id/headerLocalServer"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:text="@string/im_connect_title"
+                        android:textColor="@color/im_ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/server_address"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/textConnectServer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_im_field"
                         android:ellipsize="end"
                         android:lines="1"
-                        android:text="@string/settings_local_server"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                        app:layout_constraintBottom_toBottomOf="@id/imageLocalServer"
-                        app:layout_constraintEnd_toStartOf="@+id/switchUseLocalServer"
-                        app:layout_constraintStart_toEndOf="@id/imageLocalServer"
-                        app:layout_constraintTop_toTopOf="@id/imageLocalServer" />
+                        android:padding="14dp"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp"
+                        tools:text="sms.insuremate.co.kr" />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchUseLocalServer"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:layout_constraintBottom_toBottomOf="@id/imageLocalServer"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/imageLocalServer" />
+                        android:layout_marginTop="14dp"
+                        android:text="@string/im_connect_code_label"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
 
-                    <GridLayout
-                        android:id="@+id/layoutLocalServer"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutConnectCode"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:columnCount="2"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="@+id/switchUseLocalServer"
-                        app:layout_constraintStart_toEndOf="@id/imageLocalServer"
-                        app:layout_constraintTop_toBottomOf="@id/headerLocalServer"
-                        tools:visibility="visible">
+                        android:layout_marginTop="6dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:hintEnabled="false">
 
-                        <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/local_address" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editConnectCode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/im_connect_code_hint"
+                            android:inputType="textCapCharacters"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/textLocalIP"
-                            style="@style/HomeCardValue"
-                            android:text="@string/dots"
-                            tools:text="127.0.0.1:8080" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:lineSpacingExtra="3dp"
+                        android:text="@string/im_connect_sim_notice"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
 
-                        <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/public_address" />
-
-                        <TextView
-                            android:id="@+id/textPublicIP"
-                            style="@style/HomeCardValue"
-                            android:text="@string/dots"
-                            tools:text="127.0.0.1:8080" />
-
-                        <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/username" />
-
-                        <TextView
-                            android:id="@+id/textLocalUsername"
-                            style="@style/HomeCardValue"
-                            tools:text="sms" />
-
-                        <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/password" />
-
-                        <TextView
-                            android:id="@+id/textLocalPassword"
-                            style="@style/HomeCardValue"
-                            tools:text="1q2w3e4r" />
-
-                        <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/device_id" />
-
-                        <TextView
-                            android:id="@+id/textLocalDeviceId"
-                            style="@style/HomeCardValue"
-                            tools:text="device-123" />
-                    </GridLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonConnect"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="14dp"
+                        android:backgroundTint="@color/im_blue"
+                        android:text="@string/im_connect_button"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp"
+                        app:elevation="0dp" />
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ══════ 연결됨 — 상태 ══════ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/im_card_pad">
+
+                    <!-- 내 번호 행 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="@dimen/im_row_min"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_im_icon"
+                            android:backgroundTint="@color/im_tint_green_bg"
+                            android:contentDescription="@string/device"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_im_phone"
+                            app:tint="@color/im_tint_green_fg" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textMyNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:lines="1"
+                                android:textColor="@color/im_ink"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                tools:text="010-XXXX-XXXX" />
+
+                            <TextView
+                                android:id="@+id/textLastSent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:ellipsize="end"
+                                android:lines="1"
+                                android:textColor="@color/im_sub"
+                                android:textSize="13sp"
+                                tools:text="sms.insuremate.co.kr" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- 오늘 보냄 / 실패 두 칸 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/im_today_sent"
+                                android:textColor="@color/im_sub"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/textTodayCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/im_ink"
+                                android:textSize="26sp"
+                                android:textStyle="bold"
+                                tools:text="12 / 300" />
+
+                            <ProgressBar
+                                android:id="@+id/gaugeToday"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="6dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="12dp"
+                                android:max="100"
+                                android:progress="4"
+                                android:progressDrawable="@drawable/bg_im_gauge" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/im_failed"
+                                android:textColor="@color/im_sub"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/textFailedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/im_ink"
+                                android:textSize="26sp"
+                                android:textStyle="bold"
+                                tools:text="0" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textConnectionStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_im_chip"
+                        android:backgroundTint="@color/im_danger_bg"
+                        android:paddingStart="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="@color/im_danger_fg"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        tools:text="@string/internet_connection_unavailable"
+                        tools:visibility="visible" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:background="@color/im_line" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchService"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:text="@string/im_sending_on"
+                        android:textColor="@color/im_ink"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ══════ 문자 보내기 권한 ══════ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPermission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/im_row_min"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/im_card_pad">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_im_icon"
+                        android:backgroundTint="@color/im_tint_orange_bg"
+                        android:contentDescription="@string/im_permission_title"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_im_shield"
+                        app:tint="@color/im_tint_orange_fg" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/im_permission_title"
+                            android:textColor="@color/im_ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/im_permission_sub"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonPermission"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:backgroundTint="@color/im_blue_tint"
+                        android:text="@string/im_permission_button"
+                        android:textColor="@color/im_on_tint"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="10dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ══════ 최근 보낸 문자 ══════ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRecent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/im_card_pad">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/im_recent_title"
+                        android:textColor="@color/im_ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/containerRecent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/textRecentEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/im_recent_empty"
+                        android:textColor="@color/im_sub"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ══════ 폰 안 서버 (켰을 때만 — 값은 원본 그대로) ══════ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLocalServer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:id="@+id/layoutLocalServer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/im_card_pad">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_local_server"
+                        android:textColor="@color/im_ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/local_address"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/textLocalIP"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/dots"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp"
+                        tools:text="192.168.0.10:8080" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/public_address"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/textPublicIP"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/dots"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/username"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/textLocalUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp"
+                        tools:text="sms" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/password"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/textLocalPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/device_id"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/textLocalDeviceId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp"
+                        tools:text="device-123" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ══════ 고급 — 원본에 있던 조작을 하나도 없애지 않고 모아 둔 자리 ══════ -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                app:cardCornerRadius="16dp"
-                app:contentPadding="8dp">
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/imageRemoteServer"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="4dp"
-                        android:src="@drawable/ic_cloud_server"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/im_card_pad">
 
                     <TextView
-                        android:id="@+id/headerRemoteServer"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:text="@string/cloud_server"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                        app:layout_constraintBottom_toBottomOf="@id/imageRemoteServer"
-                        app:layout_constraintEnd_toStartOf="@+id/switchUseRemoteServer"
-                        app:layout_constraintStart_toEndOf="@id/imageRemoteServer"
-                        app:layout_constraintTop_toTopOf="@id/imageRemoteServer" />
+                        android:text="@string/im_advanced"
+                        android:textColor="@color/im_ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchUseRemoteServer"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:layout_constraintBottom_toBottomOf="@id/imageRemoteServer"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/imageRemoteServer" />
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:text="@string/im_use_cloud"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp" />
 
-                    <GridLayout
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchUseLocalServer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:text="@string/im_use_local"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchAutostart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:text="@string/settings_start_on_boot"
+                        android:textColor="@color/im_body"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
                         android:id="@+id/layoutRemoteServer"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:columnCount="2"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/imageRemoteServer"
-                        app:layout_constraintTop_toBottomOf="@id/headerRemoteServer"
-                        tools:visibility="visible">
+                        android:orientation="vertical">
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/im_gap"
+                            android:background="@color/im_line" />
 
                         <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/server_address" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/im_gap"
+                            android:text="@string/server_address"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/textRemoteAddress"
-                            style="@style/HomeCardValue"
-                            android:autoLink="web"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="@string/dots"
+                            android:textColor="@color/im_body"
+                            android:textSize="15sp"
                             tools:text="@string/settings_address_is_sms_capcom_me" />
 
                         <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/username" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/username"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/textRemoteUsername"
-                            style="@style/HomeCardValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/im_body"
+                            android:textSize="15sp"
                             tools:text="1Q2W3E" />
 
                         <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/password" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/password"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/textRemotePassword"
-                            style="@style/HomeCardValue"
-                            tools:text="1q2w3e4r" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/im_body"
+                            android:textSize="15sp" />
 
                         <TextView
-                            style="@style/HomeCardLabel"
-                            android:text="@string/device_id" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/device_id"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/textRemoteDeviceId"
-                            style="@style/HomeCardValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/im_body"
+                            android:textSize="15sp"
                             tools:text="device-456" />
-                    </GridLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
+                    </LinearLayout>
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ── 바닥 ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="4dp">
+
+                <TextView
+                    android:id="@+id/textVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/im_sub"
+                    android:textSize="12sp"
+                    tools:text="v1.75.0-im4 · InsureMate 판" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSettings"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="0dp"
+                    android:text="@string/tab_text_settings"
+                    android:textColor="@color/im_blue"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
-
     </ScrollView>
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switchAutostart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/settings_start_on_boot" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="8dp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonStart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:backgroundTint="@color/grey_700"
-        android:text="@string/button_start_service"
-        app:cornerRadius="8dp" />
 </androidx.appcompat.widget.LinearLayoutCompat>

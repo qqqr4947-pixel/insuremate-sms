@@ -21,6 +21,15 @@ class MessagesRepository(private val dao: MessagesDao) {
 
     fun selectLast(limit: Int) = dao.selectLast(limit).distinctUntilChanged()
 
+    /** 홈 화면 「최근 보낸 문자」 — 받는 번호까지 (InsureMate) */
+    fun selectLastWithRecipients(limit: Int) =
+        dao.selectLastWithRecipients(limit).distinctUntilChanged()
+
+    /** 오늘 보낸 수 / 실패 수 — 홈 화면 게이지 (InsureMate) */
+    fun countProcessedFrom(timestamp: Long) = dao.countProcessedFrom(timestamp)
+
+    fun countFailedFrom(timestamp: Long) = dao.countFailedFrom(timestamp)
+
     fun selectLast(limit: Int, state: ProcessingState? = null) =
         dao.selectLastFiltered(limit, state?.name).distinctUntilChanged()
 

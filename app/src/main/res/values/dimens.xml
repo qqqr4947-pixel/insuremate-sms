@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- 인슈어 키트 «여백 자» (계획서 ② §여백 · 폰 기준) — 시안 검사와 같은 값 -->
+    <dimen name="im_appbar">56dp</dimen>
+    <dimen name="im_page">16dp</dimen>
+    <dimen name="im_card_pad">16dp</dimen>
+    <dimen name="im_gap">12dp</dimen>
+    <dimen name="im_radius">16dp</dimen>
+    <dimen name="im_row_min">52dp</dimen>
+</resources>

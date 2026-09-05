@@ -1,19 +1,10 @@
 package me.capcom.smsgateway.ui
 
 import android.Manifest
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.text.Html
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.text.style.URLSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,16 +12,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.text.toSpanned
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.capcom.smsgateway.BuildConfig
+import me.capcom.smsgateway.MainActivity
 import me.capcom.smsgateway.R
+import me.capcom.smsgateway.data.entities.MessageWithRecipients
 import me.capcom.smsgateway.databinding.FragmentHomeBinding
+import me.capcom.smsgateway.databinding.ItemImRecentBinding
+import me.capcom.smsgateway.domain.ProcessingState
 import me.capcom.smsgateway.helpers.SettingsHelper
+import me.capcom.smsgateway.helpers.SubscriptionsHelper
 import me.capcom.smsgateway.modules.connection.ConnectionService
 import me.capcom.smsgateway.modules.events.EventBus
 import me.capcom.smsgateway.modules.gateway.GatewayService
@@ -39,10 +38,23 @@ import me.capcom.smsgateway.modules.gateway.events.DeviceRegisteredEvent
 import me.capcom.smsgateway.modules.localserver.LocalServerService
 import me.capcom.smsgateway.modules.localserver.LocalServerSettings
 import me.capcom.smsgateway.modules.localserver.events.IPReceivedEvent
+import me.capcom.smsgateway.modules.messages.MessagesRepository
+import me.capcom.smsgateway.modules.messages.MessagesSettings
 import me.capcom.smsgateway.modules.orchestrator.OrchestratorService
 import me.capcom.smsgateway.ui.dialogs.FirstStartDialogFragment
 import org.koin.android.ext.android.inject
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
+/**
+ * 홈 — 인슈어메이트 배치 (시안 ⑦).
+ *
+ * 원본(capcom6)의 조작은 **하나도 없애지 않았다** — 「내 서버 쓰기 / 폰 안 서버 쓰기 / 폰 켤 때 시작」과
+ * 서버 자격 값은 「고급」 카드 안에 그대로 있다. 바뀐 것은 «먼저 보이는 것»의 순서다:
+ * 연결 여부 → 내 번호 → 오늘 보냄 → 최근 보낸 문자.
+ */
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -51,6 +63,8 @@ class HomeFragment : Fragment() {
     private val settingsHelper: SettingsHelper by inject()
     private val localServerSettings: LocalServerSettings by inject()
     private val gatewaySettings: GatewaySettings by inject()
+    private val messagesSettings: MessagesSettings by inject()
+    private val messagesRepo: MessagesRepository by inject()
     private val connectionService: ConnectionService by inject()
 
     private val events: EventBus by inject()
@@ -60,20 +74,15 @@ class HomeFragment : Fragment() {
 
     private val orchestratorSvc: OrchestratorService by inject()
 
+    /** 코드로 스위치를 바꿀 때 리스너가 되받아 도는 것을 막는다 */
+    private var muteSwitches = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setFragmentResultListener(FirstStartDialogFragment.REQUEST_KEY) { _, data ->
             when (FirstStartDialogFragment.getResult(data)) {
-                FirstStartDialogFragment.Result.Canceled -> {
-                    Toast.makeText(
-                        requireContext(),
-                        "Operation cancelled",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    return@setFragmentResultListener
-                }
+                FirstStartDialogFragment.Result.Canceled -> return@setFragmentResultListener
 
                 FirstStartDialogFragment.Result.SignUp -> requestPermissionsAndStart()
 
@@ -89,11 +98,7 @@ class HomeFragment : Fragment() {
                             )
                             requestPermissionsAndStart()
                         } catch (th: Throwable) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Failed to register device: ${th.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            toastRegisterFailed(th)
                         }
                     }
                 }
@@ -109,11 +114,7 @@ class HomeFragment : Fragment() {
                             )
                             requestPermissionsAndStart()
                         } catch (th: Throwable) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Failed to register device: ${th.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            toastRegisterFailed(th)
                         }
                     }
                 }
@@ -132,223 +133,283 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.textLocalIP.movementMethod = LinkMovementMethod.getInstance()
-        binding.textPublicIP.movementMethod = LinkMovementMethod.getInstance()
-        binding.textLocalUsername.movementMethod = LinkMovementMethod.getInstance()
-        binding.textLocalPassword.movementMethod = LinkMovementMethod.getInstance()
-        binding.textLocalDeviceId.movementMethod = LinkMovementMethod.getInstance()
-        binding.textRemoteDeviceId.movementMethod = LinkMovementMethod.getInstance()
+        binding.textVersion.text = getString(R.string.im_version, BuildConfig.VERSION_NAME)
+        binding.textConnectServer.text = shortServerName(gatewaySettings.serverUrl)
 
-        binding.switchAutostart.isChecked = settingsHelper.autostart
+        binding.buttonSettings.setOnClickListener {
+            requireActivity().findViewById<ViewPager2>(R.id.viewPager)?.currentItem =
+                MainActivity.TAB_INDEX_SETTINGS
+        }
+
+        binding.buttonPermission.setOnClickListener { requestPermissionsAndStart() }
+
+        binding.buttonConnect.setOnClickListener { actionConnect() }
+
+        binding.switchService.setOnCheckedChangeListener { _, isChecked ->
+            if (muteSwitches) return@setOnCheckedChangeListener
+            actionStart(isChecked)
+        }
 
         binding.switchAutostart.setOnCheckedChangeListener { _, isChecked ->
+            if (muteSwitches) return@setOnCheckedChangeListener
             settingsHelper.autostart = isChecked
         }
         binding.switchUseRemoteServer.setOnCheckedChangeListener { _, isChecked ->
+            if (muteSwitches) return@setOnCheckedChangeListener
             if (isChecked != gatewaySettings.enabled) {
                 restartRequiredNotification()
             }
 
             gatewaySettings.enabled = isChecked
             binding.layoutRemoteServer.isVisible = isChecked
-            binding.textConnectionStatus.isVisible = isChecked
+            renderCards()
         }
         binding.switchUseLocalServer.setOnCheckedChangeListener { _, isChecked ->
+            if (muteSwitches) return@setOnCheckedChangeListener
             if (isChecked != localServerSettings.enabled) {
                 restartRequiredNotification()
             }
 
             localServerSettings.enabled = isChecked
-            binding.layoutLocalServer.isVisible = isChecked
+            renderCards()
         }
 
-        binding.buttonStart.setOnClickListener {
-            val isRunning = stateLiveData.value ?: false
-            actionStart(!isRunning)
-        }
-
-//        if (settingsHelper.autostart) {
-//            actionStart(true)
-//        }
-
+        // ── 내 서버 등록 결과 ──
         viewLifecycleOwner.lifecycleScope.launch {
             events.collect<DeviceRegisteredEvent.Success> { event ->
                 binding.textRemoteAddress.text = getString(R.string.address_is, event.server)
-
-                binding.textRemoteUsername.movementMethod = LinkMovementMethod.getInstance()
-                binding.textRemotePassword.movementMethod = LinkMovementMethod.getInstance()
-
-                binding.textRemoteUsername.text = makeCopyableLink(
-                    Html
-                        .fromHtml(
-                            "<a href>${event.login}</a>"
-                        )
-                )
-
-                binding.textRemotePassword.text = when (event.password) {
-                    null -> getString(R.string.password_hidden)
-                    else -> makeCopyableLink(
-                        Html
-                            .fromHtml(
-                                "<a href>${event.password}</a>"
-                            )
-                    )
-                }
-
-                // Set Cloud Server Device ID
-                binding.textRemoteDeviceId.text = gatewaySettings.deviceId?.let {
-                    makeCopyableLink(
-                        Html.fromHtml(
-                            "<a href>$it</a>"
-                        )
-                    )
-                } ?: getString(R.string.n_a)
+                binding.textRemoteUsername.text = event.login
+                binding.textRemotePassword.text =
+                    event.password ?: getString(R.string.password_hidden)
+                binding.textRemoteDeviceId.text =
+                    gatewaySettings.deviceId ?: getString(R.string.n_a)
+                renderCards()
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             events.collect<DeviceRegisteredEvent.Failure> { event ->
                 binding.textRemoteAddress.text = getString(R.string.address_is, event.server)
-
                 binding.textRemoteUsername.text = getString(R.string.not_registered)
                 binding.textRemotePassword.text = getString(R.string.n_a)
-
-                // Set Cloud Server Device ID (even for failure cases)
-                binding.textRemoteDeviceId.text = gatewaySettings.deviceId?.let {
-                    makeCopyableLink(
-                        Html.fromHtml(
-                            "<a href>$it</a>"
-                        )
-                    )
-                } ?: getString(R.string.n_a)
+                binding.textRemoteDeviceId.text =
+                    gatewaySettings.deviceId ?: getString(R.string.n_a)
 
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.failed_to_register_device, event.reason),
                     Toast.LENGTH_LONG
                 ).show()
+                renderCards()
             }
         }
 
+        // ── 폰 안 서버 주소 ──
         viewLifecycleOwner.lifecycleScope.launch {
             events.collect<IPReceivedEvent> { event ->
-                binding.textLocalUsername.text = makeCopyableLink(
-                    Html.fromHtml(
-                        "<a href>${localServerSettings.username}</a>"
-                    )
-                )
-                binding.textLocalPassword.text = makeCopyableLink(
-                    Html.fromHtml(
-                        "<a href>${localServerSettings.password}</a>"
-                    )
-                )
-
-                binding.textLocalIP.text = event.localIP?.let {
-                    makeCopyableLink(
-                        Html.fromHtml(
-                            getString(
-                                R.string.settings_local_address_is,
-                                event.localIP,
-                                localServerSettings.port
-                            )
-                        )
-                    )
-
-                } ?: getString(R.string.not_available)
-
-                binding.textPublicIP.text = event.publicIP?.let {
-                    makeCopyableLink(
-                        Html.fromHtml(
-                            getString(
-                                R.string.settings_public_address_is,
-                                event.publicIP,
-                                localServerSettings.port
-                            )
-                        )
-                    )
-                } ?: getString(R.string.not_available)
-
-                // Set Local Server Device ID
-                binding.textLocalDeviceId.text = localServerSettings.deviceId?.let {
-                    makeCopyableLink(
-                        Html.fromHtml(
-                            "<a href>$it</a>"
-                        )
-                    )
-                } ?: getString(R.string.n_a)
+                binding.textLocalUsername.text = localServerSettings.username
+                binding.textLocalPassword.text = localServerSettings.password
+                binding.textLocalIP.text = event.localIP
+                    ?.let { "$it:${localServerSettings.port}" }
+                    ?: getString(R.string.not_available)
+                binding.textPublicIP.text = event.publicIP
+                    ?.let { "$it:${localServerSettings.port}" }
+                    ?: getString(R.string.not_available)
+                binding.textLocalDeviceId.text =
+                    localServerSettings.deviceId ?: getString(R.string.n_a)
             }
         }
 
-        stateLiveData.observe(viewLifecycleOwner) { isRunning ->
-            binding.buttonStart.apply {
-                text = getString(
-                    if (isRunning) R.string.button_stop_service
-                    else R.string.button_start_service
-                )
-                backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        if (isRunning) R.color.red_800 else R.color.grey_700
-                    )
-                )
-            }
-        }
-
-        connectionService.status.observe(viewLifecycleOwner) {
-            binding.textConnectionStatus.apply {
-                isVisible = binding.switchUseRemoteServer.isChecked
-                isEnabled = it
-                text = when (it) {
-                    true -> context.getString(R.string.internet_connection_available)
-                    false -> context.getString(R.string.internet_connection_unavailable)
-                }
-            }
-        }
-    }
-
-    private fun makeCopyableLink(source: Spanned): Spanned {
-        val builder = SpannableStringBuilder(source)
-        val spans = builder.getSpans(0, builder.length, URLSpan::class.java)
-        for (span in spans) {
-            val innerText = builder.subSequence(
-                builder.getSpanStart(span),
-                builder.getSpanEnd(span)
-            ).toString()
-            val clickableSpan = object : ClickableSpan() {
-
-                override fun onClick(widget: View) {
-                    val clipboard = requireContext().getSystemService(
-                        Context.CLIPBOARD_SERVICE
-                    ) as ClipboardManager
-                    clipboard.setPrimaryClip(ClipData.newPlainText("", innerText))
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
-                        Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT)
-                            .show()
-                }
-            }
-            builder.setSpan(
-                clickableSpan,
-                builder.getSpanStart(span),
-                builder.getSpanEnd(span),
-                builder.getSpanFlags(span)
+        stateLiveData.observe(viewLifecycleOwner) { running ->
+            muteSwitches = true
+            binding.switchService.isChecked = running
+            muteSwitches = false
+            binding.switchService.text = getString(
+                if (running) R.string.im_sending_on else R.string.im_sending_off
             )
-            builder.removeSpan(span)
+            renderStatusChip(running)
         }
 
-        return builder.toSpanned()
+        connectionService.status.observe(viewLifecycleOwner) { online ->
+            binding.textConnectionStatus.isVisible = !online
+            binding.textConnectionStatus.text =
+                getString(R.string.internet_connection_unavailable)
+        }
+
+        // ── 최근 보낸 문자 3줄 + 오늘 숫자 (같은 신호로 갱신) ──
+        messagesRepo.selectLastWithRecipients(RECENT_LIMIT).observe(viewLifecycleOwner) { list ->
+            renderRecent(list.orEmpty())
+            refreshCounters()
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
+        muteSwitches = true
         binding.switchUseRemoteServer.isChecked = gatewaySettings.enabled
         binding.switchUseLocalServer.isChecked = localServerSettings.enabled
+        binding.switchAutostart.isChecked = settingsHelper.autostart
+        muteSwitches = false
+
+        binding.layoutRemoteServer.isVisible = gatewaySettings.enabled
+        binding.textConnectServer.text = shortServerName(gatewaySettings.serverUrl)
+        binding.textRemoteAddress.text = shortServerName(gatewaySettings.serverUrl)
+
+        renderMyNumber()
+        renderCards()
+        refreshCounters()
+    }
+
+    // ══════════ 그리기 ══════════
+
+    /** 어떤 카드를 보일지 — 연결 전이면 연결 카드, 연결되면 상태 카드 */
+    private fun renderCards() {
+        val binding = _binding ?: return
+        val registered = gatewaySettings.registrationInfo != null
+
+        binding.cardConnect.isVisible = !registered
+        binding.cardStatus.isVisible = registered
+        binding.cardPermission.isVisible = !hasSendPermission()
+        binding.cardLocalServer.isVisible = localServerSettings.enabled
+        binding.cardRecent.isVisible = registered || localServerSettings.enabled
+
+        renderStatusChip(stateLiveData.value ?: false)
+    }
+
+    private fun renderStatusChip(running: Boolean) {
+        val binding = _binding ?: return
+        val registered = gatewaySettings.registrationInfo != null
+
+        val (label, bg, fg) = when {
+            !registered -> Triple(
+                R.string.im_state_disconnected, R.color.im_hold_bg, R.color.im_hold_fg
+            )
+
+            running -> Triple(R.string.im_state_connected, R.color.im_ok_bg, R.color.im_ok_fg)
+            else -> Triple(R.string.im_state_off, R.color.im_warn_bg, R.color.im_warn_fg)
+        }
+
+        binding.chipStatus.text = getString(label)
+        binding.chipStatus.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(requireContext(), bg))
+        binding.chipStatus.setTextColor(ContextCompat.getColor(requireContext(), fg))
+    }
+
+    private fun renderMyNumber() {
+        val binding = _binding ?: return
+        val number = runCatching {
+            SubscriptionsHelper.getActiveSimCards(requireContext())
+                .firstOrNull { !it.phoneNumber.isNullOrBlank() }
+                ?.phoneNumber
+        }.getOrNull()
+
+        binding.textMyNumber.text = number ?: getString(R.string.im_number_unknown)
+    }
+
+    /** 오늘 보낸 수 · 실패 수 — DB 조회라 IO 에서 센다 */
+    private fun refreshCounters() {
+        val limit = if (messagesSettings.limitEnabled) messagesSettings.limitValue else 0
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val since = startOfToday()
+            val stats = withContext(Dispatchers.IO) {
+                runCatching {
+                    messagesRepo.countProcessedFrom(since) to messagesRepo.countFailedFrom(since)
+                }.getOrNull()
+            } ?: return@launch
+
+            val binding = _binding ?: return@launch
+            val sent = stats.first.count
+            val failed = stats.second.count
+
+            binding.textTodayCount.text = when {
+                limit > 0 -> getString(R.string.im_today_of, sent, limit)
+                else -> sent.toString()
+            }
+            binding.gaugeToday.isVisible = limit > 0
+            binding.gaugeToday.progress = when {
+                limit > 0 -> (sent * 100 / limit).coerceIn(0, 100)
+                else -> 0
+            }
+            binding.textFailedCount.text = failed.toString()
+
+            val last = stats.first.lastTimestamp
+            val server = shortServerName(gatewaySettings.serverUrl)
+            binding.textLastSent.text = when {
+                last > 0 -> getString(R.string.im_last_sent, timeText(last)) + " · " + server
+                else -> server
+            }
+        }
+    }
+
+    private fun renderRecent(list: List<MessageWithRecipients>) {
+        val binding = _binding ?: return
+        val container = binding.containerRecent
+        container.removeAllViews()
+
+        val rows = list.take(RECENT_LIMIT)
+        binding.textRecentEmpty.isVisible = rows.isEmpty()
+
+        val inflater = LayoutInflater.from(requireContext())
+        rows.forEach { item ->
+            val row = ItemImRecentBinding.inflate(inflater, container, false)
+            row.textRecentPhone.text = item.recipients.firstOrNull()?.phoneNumber
+                ?: getString(R.string.n_a)
+            row.textRecentTime.text = timeText(item.message.processedAt ?: item.message.createdAt)
+
+            val state = item.state
+            row.chipRecentState.text = getString(stateLabel(state))
+            val colors = stateColors(state)
+            row.chipRecentState.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), colors.first))
+            row.chipRecentState.setTextColor(
+                ContextCompat.getColor(requireContext(), colors.second)
+            )
+
+            container.addView(row.root)
+        }
+    }
+
+    private fun stateLabel(state: ProcessingState): Int = when (state) {
+        ProcessingState.Delivered -> R.string.im_state_delivered
+        ProcessingState.Sent, ProcessingState.Processed -> R.string.im_state_sent
+        ProcessingState.Failed -> R.string.im_state_failed
+        ProcessingState.Cancelled, ProcessingState.Cancelling -> R.string.im_state_cancelled
+        ProcessingState.Pending -> R.string.im_state_pending
+    }
+
+    private fun stateColors(state: ProcessingState): Pair<Int, Int> = when (state) {
+        ProcessingState.Delivered -> R.color.im_ok_bg to R.color.im_ok_fg
+        ProcessingState.Sent, ProcessingState.Processed -> R.color.im_blue_tint to R.color.im_on_tint
+        ProcessingState.Failed -> R.color.im_danger_bg to R.color.im_danger_fg
+        else -> R.color.im_hold_bg to R.color.im_hold_fg
+    }
+
+    // ══════════ 동작 ══════════
+
+    /** 「연결하기」 — 연결 코드를 저장하고 내 서버를 켠 뒤 등록을 시작한다 */
+    private fun actionConnect() {
+        val code = binding.editConnectCode.text?.toString()?.trim().orEmpty()
+        if (code.isEmpty()) {
+            binding.layoutConnectCode.error = getString(R.string.im_connect_code_required)
+            return
+        }
+        binding.layoutConnectCode.error = null
+
+        gatewaySettings.privateToken = code
+        gatewaySettings.enabled = true
+
+        muteSwitches = true
+        binding.switchUseRemoteServer.isChecked = true
+        muteSwitches = false
+        binding.layoutRemoteServer.isVisible = true
+
+        requestPermissionsAndStart()
     }
 
     private fun actionStart(start: Boolean) {
         if (start) {
-            if (gatewaySettings.enabled
-                && gatewaySettings.registrationInfo == null
-            ) {
+            if (gatewaySettings.enabled && gatewaySettings.registrationInfo == null) {
                 cloudFirstStart()
                 return
             }
@@ -372,6 +433,10 @@ class HomeFragment : Fragment() {
         orchestratorSvc.start(requireContext().applicationContext, false)
     }
 
+    private fun hasSendPermission(): Boolean = ContextCompat.checkSelfPermission(
+        requireContext(), Manifest.permission.SEND_SMS
+    ) == PackageManager.PERMISSION_GRANTED
+
     private fun requestPermissionsAndStart() {
         val permissionsRequired =
             listOf(
@@ -392,6 +457,8 @@ class HomeFragment : Fragment() {
 
         if (permissionsRequired.isEmpty()) {
             start()
+            renderCards()
+            renderMyNumber()
             return
         }
 
@@ -410,23 +477,26 @@ class HomeFragment : Fragment() {
         ).show()
     }
 
+    private fun toastRegisterFailed(th: Throwable) {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.failed_to_register_device, th.message ?: ""),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private val permissionsRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         if (result.values.all { it }) {
-            // Permission is granted. Continue the action or workflow in your
-            // app.
             Log.d(javaClass.name, "Permissions granted")
-        } else {
-            Toast.makeText(
-                requireContext(),
-                "Not all permissions granted, some features may not work",
-                Toast.LENGTH_SHORT
-            )
-                .show()
         }
 
         start()
+        if (_binding != null) {
+            renderCards()
+            renderMyNumber()
+        }
     }
 
     private val stateLiveData by lazy {
@@ -449,14 +519,32 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // ══════════ 잔손 ══════════
+
+    /** https://sms.insuremate.co.kr/api/mobile/v1 → sms.insuremate.co.kr */
+    private fun shortServerName(url: String): String = runCatching {
+        java.net.URI(url).host ?: url
+    }.getOrDefault(url)
+
+    private fun startOfToday(): Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
+    private fun timeText(timestamp: Long): String =
+        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     companion object {
+        private const val RECENT_LIMIT = 3
+
         @JvmStatic
-        fun newInstance() =
-            HomeFragment()
+        fun newInstance() = HomeFragment()
     }
 }

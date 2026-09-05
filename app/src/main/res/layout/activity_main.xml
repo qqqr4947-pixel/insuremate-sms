@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/im_bg"
     android:orientation="vertical"
     android:gravity="center"
     tools:context=".MainActivity">
@@ -10,7 +12,13 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@color/im_surface"
+        app:tabIconTint="@color/im_tab_icon"
+        app:tabIndicatorColor="@color/im_blue"
+        app:tabIndicatorHeight="2dp"
+        app:tabSelectedTextColor="@color/im_blue"
+        app:tabTextColor="@color/im_sub" />
 
     <FrameLayout
         android:layout_width="match_parent"

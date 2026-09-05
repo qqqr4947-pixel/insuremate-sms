@@ -41,8 +41,10 @@ class GatewaySettings(
 
     val serverUrl: String
         get() = storage.get<String?>(CLOUD_URL) ?: PUBLIC_URL
-    val privateToken: String?
+    /** 「연결 코드」 — 홈 화면에서도 넣을 수 있게 쓰기를 열어 둔다 (InsureMate) */
+    var privateToken: String?
         get() = storage.get<String>(PRIVATE_TOKEN)
+        set(value) = storage.set(PRIVATE_TOKEN, value)
 
     val notificationChannel: NotificationChannel
         get() = storage.get<NotificationChannel>(NOTIFICATION_CHANNEL) ?: NotificationChannel.AUTO
