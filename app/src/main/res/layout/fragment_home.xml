@@ -28,7 +28,7 @@
             android:layout_width="@dimen/im_logo"
             android:layout_height="@dimen/im_logo"
             android:contentDescription="@string/app_name"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@drawable/ic_im_logo" />
 
         <TextView
             android:layout_width="0dp"
