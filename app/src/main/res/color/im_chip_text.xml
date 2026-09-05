@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 거르개 칩 글자 — 고르면 진한 파랑, 아니면 본문 회색 (키트 .tui-filter-chip) -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="@color/im_on_tint" />
+    <item android:color="@color/im_body" />
+</selector>

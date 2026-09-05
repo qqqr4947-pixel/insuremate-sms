@@ -32,7 +32,7 @@ class MessageRecipientsAdapter :
             binding.textViewId.text = recipient.phoneNumber
             binding.textViewState.text = recipient.state.name
             binding.textViewDate.text = recipient.error
-            binding.imageViewState.setColorFilter(recipient.state.color)
+            binding.imageViewState.setColorFilter(recipient.state.color(binding.root.context))
         }
 
         companion object {

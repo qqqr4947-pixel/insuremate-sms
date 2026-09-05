@@ -39,6 +39,7 @@
     <string name="im_state_delivered">도착</string>
     <string name="im_state_failed">실패</string>
     <string name="im_state_pending">대기</string>
+    <string name="im_state_cancelling">취소하는 중</string>
     <string name="im_state_cancelled">취소</string>
     <string name="battery_optimization_already_disabled">배터리 최적화가 이미 꺼져 있어요</string>
     <string name="battery_optimization_is_not_supported_on_this_device">이 폰은 배터리 최적화 설정이 없어요</string>
