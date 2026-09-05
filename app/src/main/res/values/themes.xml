@@ -9,8 +9,11 @@
         <item name="colorSecondary">@color/im_blue</item>
         <item name="colorSecondaryVariant">@color/im_blue_strong</item>
         <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- 상태바 = 지면과 같은 흰색 (공기계 실측 2026-09-06: 진한 파랑이 흰 지면과 안 맞았다).
+             흰 바탕이면 시계·배터리 글자를 검게 해야 보인다(windowLightStatusBar · 안드로이드 6 이상).
+             그 아래 판은 검은 글자를 못 바꾸므로 values-v23 이 아닌 곳에서는 파랑을 유지한다. -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/im_status_bar</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <!-- 인슈어메이트 지면 — 카드(흰색)와 구분되는 회색 바탕 (키트 tui-bg) -->
         <item name="android:windowBackground">@color/im_bg</item>
         <item name="android:colorBackground">@color/im_bg</item>
@@ -26,6 +29,8 @@
          «크기·색·여백»만 우리 값으로 맞춘다. -->
     <style name="Im.PreferenceTheme" parent="@style/PreferenceThemeOverlay">
         <item name="preferenceCategoryTitleTextAppearance">@style/Im.Pref.CategoryTitle</item>
+        <!-- 글자색은 textAppearance 가 아니라 이 속성이 이긴다 (im6 가 크기만 바뀌고 파랑이 남았던 이유) -->
+        <item name="preferenceCategoryTitleTextColor">@color/im_sub</item>
     </style>
 
     <!-- 묶음 제목(「한도」·「기록」 같은 머리글) = 키트 .tui-label — 파랑이 아니라 회색이다 -->

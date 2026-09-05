@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 안드로이드 6 이상: 상태바를 지면(흰색 · 다크는 im_surface 다크 값)과 같게.
+         im_surface 를 «가리키기만» 하므로 다크 값은 values-night/colors.xml 이 정한다. -->
+    <color name="im_status_bar">@color/im_surface</color>
+</resources>
