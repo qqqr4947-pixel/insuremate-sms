@@ -3,7 +3,12 @@ package me.capcom.smsgateway.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -145,6 +150,8 @@ class HomeFragment : Fragment() {
 
         binding.buttonPermission.setOnClickListener { requestPermissionsAndStart() }
 
+        binding.buttonBattery.setOnClickListener { requestIgnoreBatteryOptimizations() }
+
         binding.buttonConnect.setOnClickListener { actionConnect() }
 
         binding.switchService.setOnCheckedChangeListener { _, isChecked ->
@@ -267,6 +274,7 @@ class HomeFragment : Fragment() {
         binding.cardConnect.isVisible = !registered
         binding.cardStatus.isVisible = registered || usesLocal
         binding.cardPermission.isVisible = !hasSendPermission()
+        binding.cardBattery.isVisible = !isIgnoringBatteryOptimizations()
         binding.cardLocalServer.isVisible = usesLocal
         binding.cardRecent.isVisible = registered || usesLocal
 
@@ -469,6 +477,37 @@ class HomeFragment : Fragment() {
     private fun hasSendPermission(): Boolean = ContextCompat.checkSelfPermission(
         requireContext(), Manifest.permission.SEND_SMS
     ) == PackageManager.PERMISSION_GRANTED
+
+    /** 배터리 최적화 제외 — 설정 화면(SettingsFragment)과 같은 시스템 창을 홈에서 바로 연다.
+     *  돌아오면 onResume → renderCards 가 다시 재서 카드가 사라진다. */
+    private fun isIgnoringBatteryOptimizations(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
+        val pm = requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager
+        return pm.isIgnoringBatteryOptimizations(requireContext().packageName)
+    }
+
+    private fun requestIgnoreBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.battery_optimization_is_not_supported_on_this_device),
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        if (isIgnoringBatteryOptimizations()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.battery_optimization_already_disabled),
+                Toast.LENGTH_SHORT
+            ).show()
+            renderCards()
+            return
+        }
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+        intent.data = Uri.parse("package:${requireContext().packageName}")
+        startActivity(intent)
+    }
 
     private fun requestPermissionsAndStart() {
         val permissionsRequired =

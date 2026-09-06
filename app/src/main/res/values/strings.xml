@@ -26,6 +26,9 @@
     <string name="im_permission_title">Permission to send SMS</string>
     <string name="im_permission_sub">This app needs it to send messages</string>
     <string name="im_permission_button">Turn on</string>
+    <string name="im_battery_title">Exclude from battery optimization</string>
+    <string name="im_battery_sub">Keeps messages going out while the phone sleeps</string>
+    <string name="im_battery_button">Exclude</string>
     <string name="im_recent_title">Recently sent</string>
     <string name="im_recent_empty">No messages sent yet</string>
     <string name="im_advanced">Advanced</string>

@@ -429,6 +429,82 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ══════ 배터리 최적화 제외 (박 대표 2026-09-06 「처음 설정에서 가능하게」) — 제외돼 있으면 숨는다 ══════ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBattery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/im_gap"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/im_row_min"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/im_card_pad">
+
+                    <ImageView
+                        android:layout_width="@dimen/im_icon_chip"
+                        android:layout_height="@dimen/im_icon_chip"
+                        android:background="@drawable/bg_im_icon"
+                        android:backgroundTint="@color/im_tint_orange_bg"
+                        android:contentDescription="@string/im_battery_title"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_im_phone"
+                        app:tint="@color/im_tint_orange_fg" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/im_battery_title"
+                            android:textColor="@color/im_ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/im_battery_sub"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonBattery"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/im_btn_sm_h"
+                        android:layout_marginStart="8dp"
+                        android:backgroundTint="@color/im_blue_tint"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="@string/im_battery_button"
+                        android:textAllCaps="false"
+                        android:textColor="@color/im_on_tint"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="@dimen/im_btn_sm_r" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- ══════ 최근 보낸 문자 ══════ -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardRecent"
