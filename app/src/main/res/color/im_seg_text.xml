@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 세그먼트 글자색 — 켜진 칸(enabled=false)=im_ink, 나머지=im_sub (키트 tui-seg) -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/im_ink" android:state_enabled="false" />
+    <item android:color="@color/im_sub" />
+</selector>

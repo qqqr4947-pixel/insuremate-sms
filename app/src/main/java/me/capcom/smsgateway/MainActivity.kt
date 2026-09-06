@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.viewpager2.widget.ViewPager2
 import me.capcom.smsgateway.databinding.ActivityMainBinding
 import me.capcom.smsgateway.ui.HolderFragment
 import me.capcom.smsgateway.ui.HomeFragment
@@ -29,24 +29,17 @@ class MainActivity : AppCompatActivity() {
         val adapter = FragmentsAdapter(this)
         binding.viewPager.adapter = adapter
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            when (position) {
-                0 -> tab.apply {
-                    text = getString(R.string.tab_text_home)
-                    setIcon(R.drawable.ic_home)
-                }
-
-                1 -> tab.apply {
-                    text = getString(R.string.tab_text_messages)
-                    setIcon(R.drawable.ic_sms)
-                }
-
-                2 -> tab.apply {
-                    text = getString(R.string.tab_text_settings)
-                    setIcon(R.drawable.ic_advanced)
-                }
+        // 아래 탭바 — 탭 순서는 어댑터 순서(홈 0 · 문자 1 · 설정 2)와 같다
+        val tabs = listOf(binding.tabHome, binding.tabMessages, binding.tabSettings)
+        tabs.forEachIndexed { index, tab ->
+            tab.setOnClickListener { binding.viewPager.currentItem = index }
+        }
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                tabs.forEachIndexed { index, tab -> tab.isSelected = index == position }
             }
-        }.attach()
+        })
+        tabs[binding.viewPager.currentItem].isSelected = true
 
         processIntent(intent)
     }

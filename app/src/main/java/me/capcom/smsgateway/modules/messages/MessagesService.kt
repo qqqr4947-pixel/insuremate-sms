@@ -173,6 +173,42 @@ class MessagesService(
             return message
         }
     }
+
+    /**
+     * 실패한 문자를 «새 줄»로 다시 큐에 넣는다 (im8 · 2026-09-06).
+     * 원래 건은 실패로 남긴다 — 실패는 최종 상태이고 DAO 도 되살리기를 막는다(`state <> 'Failed'`).
+     * 본문·받는 번호·유심·전달 보고는 원래 건 그대로, 예약·유효기간은 두지 않는다(지금 바로).
+     */
+    fun resendMessage(id: String): MessageWithRecipients {
+        val original = getMessage(id)
+            ?: throw IllegalArgumentException("Message with id $id not found")
+        val stored = original.message
+        val content: MessageContent = stored.textContent
+            ?: stored.dataContent
+            ?: stored.mmsContent
+            ?: throw IllegalStateException("Message with id $id has no content")
+
+        val request = SendRequest(
+            stored.source,
+            me.capcom.smsgateway.modules.messages.data.Message(
+                id = com.aventrix.jnanoid.jnanoid.NanoIdUtils.randomNanoId(),
+                content = content,
+                phoneNumbers = original.recipients.map { it.phoneNumber },
+                isEncrypted = stored.isEncrypted,
+                createdAt = Date(),
+            ),
+            SendParams(
+                withDeliveryReport = stored.withDeliveryReport,
+                skipPhoneValidation = true,   // 저장된 번호는 이미 검증을 지난 모양이다
+                simNumber = stored.simNumber,
+                validUntil = null,
+                scheduleAt = null,
+                priority = stored.priority,
+            )
+        )
+
+        return enqueueMessage(request)
+    }
     //#endregion
 
     //#region Read

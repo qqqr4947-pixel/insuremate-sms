@@ -50,6 +50,32 @@
         app:layout_constraintTop_toBottomOf="@id/textViewId"
         tools:text="오늘 09:12" />
 
+    <!-- 다시 보내기 — 실패한 줄에만 보인다(키트 작은 버튼 36/8/14). 원래 건은 실패로 두고 새 줄로 큐에 넣는다 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonResend"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/im_btn_sm_h"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/im_blue_tint"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:letterSpacing="0"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="@string/im_resend"
+        android:textAllCaps="false"
+        android:textColor="@color/im_on_tint"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:cornerRadius="@dimen/im_btn_sm_r"
+        app:layout_constraintStart_toEndOf="@id/imageViewState"
+        app:layout_constraintTop_toBottomOf="@id/textViewDate"
+        tools:visibility="visible" />
+
     <!-- 상태 칩 — 한국어로 -->
     <TextView
         android:id="@+id/textViewState"

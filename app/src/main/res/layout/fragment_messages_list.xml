@@ -114,7 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="4dp"
-            android:paddingBottom="4dp"
+            android:paddingBottom="@dimen/im_content_bottom"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_message" />

@@ -68,11 +68,15 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
+        <!-- 아래 여백 94 = 떠 있는 탭바(14+66+14) — 마지막 카드가 탭바에 안 가리게 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/im_page">
+            android:paddingStart="@dimen/im_page"
+            android:paddingTop="@dimen/im_page"
+            android:paddingEnd="@dimen/im_page"
+            android:paddingBottom="@dimen/im_content_bottom">
 
             <!-- ══════ 연결 전 — 내 서버에 연결 ══════ -->
             <com.google.android.material.card.MaterialCardView

@@ -4,24 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.capcom.smsgateway.R
 import me.capcom.smsgateway.data.entities.Message
 import me.capcom.smsgateway.databinding.FragmentMessagesListBinding
+import me.capcom.smsgateway.modules.messages.MessagesService
 import me.capcom.smsgateway.modules.messages.vm.MessagesListViewModel
 import me.capcom.smsgateway.ui.adapters.MessagesAdapter
 import me.capcom.smsgateway.domain.ProcessingState
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MessagesListFragment : Fragment(), MessagesAdapter.OnItemClickListener<Message> {
 
     private val viewModel: MessagesListViewModel by viewModel()
-    private val messagesAdapter = MessagesAdapter(this)
+    private val messagesSvc: MessagesService by inject()
+    private val messagesAdapter = MessagesAdapter(this) { resend(it) }
     private var _binding: FragmentMessagesListBinding? = null
     private val binding get() = _binding!!
 
@@ -116,6 +124,21 @@ class MessagesListFragment : Fragment(), MessagesAdapter.OnItemClickListener<Mes
         parentFragmentManager.commit {
             replace(R.id.rootLayout, MessageDetailsFragment.newInstance(item.id))
             addToBackStack(null)
+        }
+    }
+
+    /** 실패한 문자를 새 줄로 다시 큐에 넣는다 — 목록은 LiveData 라 새 줄이 저절로 위에 뜬다 */
+    private fun resend(item: Message) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val queued = withContext(Dispatchers.IO) {
+                runCatching { messagesSvc.resendMessage(item.id) }.isSuccess
+            }
+            val ctx = context ?: return@launch
+            Toast.makeText(
+                ctx,
+                if (queued) R.string.im_resend_queued else R.string.im_resend_failed,
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
