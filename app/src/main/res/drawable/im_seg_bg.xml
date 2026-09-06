@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 세그먼트 컨트롤 바탕 = 키트 tui-seg (press 색 · 라운딩 11 · 안쪽 3 은 layout padding) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/im_press" />
+    <corners android:radius="11dp" />
+</shape>

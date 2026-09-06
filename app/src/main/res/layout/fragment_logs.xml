@@ -8,6 +8,8 @@
     android:layout_height="match_parent"
     android:layout_margin="0dp"
     android:background="?android:colorBackground"
+    android:paddingBottom="@dimen/im_content_bottom"
+    android:clipToPadding="false"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.LogsListFragment"
     tools:listitem="@layout/item_log_entry" />

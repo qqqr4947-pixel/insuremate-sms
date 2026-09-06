@@ -36,7 +36,9 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
     ): RecyclerView {
         val list = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         val page = resources.getDimensionPixelSize(R.dimen.im_page)
-        list.setPadding(page, page, page, page)
+        // 아래는 94(떠 있는 탭바 14+66+14) — 마지막 카드가 탭바에 안 가리게
+        val bottom = resources.getDimensionPixelSize(R.dimen.im_content_bottom)
+        list.setPadding(page, page, page, bottom)
         list.clipToPadding = false
         list.addItemDecoration(ImCardDecoration(requireContext()) { preferenceScreen })
         return list

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 문자 탭 — 「보낸 문자 / 받은 문자」는 같은 자료의 보기 둘이라 키트 세그먼트(tui-seg)로 (im8 · 2026-09-06).
+     🔴 버튼 id 와 enabled 토글 논리(HolderFragment)는 그대로 — 고른 쪽이 enabled=false 이고, 그 상태가 «켜진 칸» 모양이다. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,33 +9,56 @@
     tools:context=".ui.HolderFragment">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/im_page"
+        android:layout_marginTop="@dimen/im_gap"
+        android:layout_marginEnd="@dimen/im_page"
+        android:background="@drawable/im_seg_bg"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="3dp">
 
         <Button
             android:id="@+id/buttonOutgoing"
-            android:layout_width="0dp"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="8dp"
+            android:background="@drawable/im_seg_item_bg"
+            android:letterSpacing="0"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="14dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="5dp"
+            android:stateListAnimator="@null"
             android:text="@string/outgoing_messages"
-            android:textAllCaps="true" />
+            android:textAllCaps="false"
+            android:textColor="@color/im_seg_text"
+            android:textSize="13.5sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/buttonIncoming"
-            android:layout_width="0dp"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/im_seg_item_bg"
             android:enabled="false"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="8dp"
+            android:letterSpacing="0"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="14dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="5dp"
+            android:stateListAnimator="@null"
             android:text="@string/incoming_messages"
-            android:textAllCaps="true" />
+            android:textAllCaps="false"
+            android:textColor="@color/im_seg_text"
+            android:textSize="13.5sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <FrameLayout

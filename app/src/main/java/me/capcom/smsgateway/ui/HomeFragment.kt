@@ -41,6 +41,8 @@ import me.capcom.smsgateway.modules.localserver.events.IPReceivedEvent
 import me.capcom.smsgateway.modules.messages.MessagesRepository
 import me.capcom.smsgateway.modules.messages.MessagesSettings
 import me.capcom.smsgateway.modules.orchestrator.OrchestratorService
+import me.capcom.smsgateway.providers.LocalIPProvider
+import me.capcom.smsgateway.providers.PublicIPProvider
 import me.capcom.smsgateway.ui.dialogs.FirstStartDialogFragment
 import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
@@ -203,19 +205,10 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // ── 폰 안 서버 주소 ──
+        // ── 폰 안 서버 주소 — 서버가 켜지며 보내는 알림도 받지만, 그것에만 기대지 않는다(onResume 에서 직접 그림) ──
         viewLifecycleOwner.lifecycleScope.launch {
             events.collect<IPReceivedEvent> { event ->
-                binding.textLocalUsername.text = localServerSettings.username
-                binding.textLocalPassword.text = localServerSettings.password
-                binding.textLocalIP.text = event.localIP
-                    ?.let { "$it:${localServerSettings.port}" }
-                    ?: getString(R.string.not_available)
-                binding.textPublicIP.text = event.publicIP
-                    ?.let { "$it:${localServerSettings.port}" }
-                    ?: getString(R.string.not_available)
-                binding.textLocalDeviceId.text =
-                    localServerSettings.deviceId ?: getString(R.string.n_a)
+                renderLocalServer(event.localIP, event.publicIP)
             }
         }
 
@@ -257,23 +250,63 @@ class HomeFragment : Fragment() {
 
         renderMyNumber()
         renderCards()
+        renderLocalServer()
         refreshCounters()
     }
 
     // ══════════ 그리기 ══════════
 
-    /** 어떤 카드를 보일지 — 연결 전이면 연결 카드, 연결되면 상태 카드 */
+    /** 어떤 카드를 보일지 — 연결 전이면 연결 카드, 연결되면 상태 카드.
+     *  상태 카드(내 번호·오늘 보냄·「보내기」 스위치)는 내 서버와 무관하므로 **폰 안 서버만 쓰는 사람에게도** 보인다 —
+     *  그래야 그 사람도 켜고 끌 자리가 있다(im7 까지는 자동 시작 말고 켤 길이 없었다). */
     private fun renderCards() {
         val binding = _binding ?: return
         val registered = gatewaySettings.registrationInfo != null
+        val usesLocal = localServerSettings.enabled
 
         binding.cardConnect.isVisible = !registered
-        binding.cardStatus.isVisible = registered
+        binding.cardStatus.isVisible = registered || usesLocal
         binding.cardPermission.isVisible = !hasSendPermission()
-        binding.cardLocalServer.isVisible = localServerSettings.enabled
-        binding.cardRecent.isVisible = registered || localServerSettings.enabled
+        binding.cardLocalServer.isVisible = usesLocal
+        binding.cardRecent.isVisible = registered || usesLocal
 
         renderStatusChip(stateLiveData.value ?: false)
+    }
+
+    /**
+     * 「폰 안 서버」 카드 — 아이디·비밀번호·기기 ID·포트는 설정값이라 바로 그리고, 주소만 폰에게 묻는다.
+     * 왜 알림(IPReceivedEvent)에만 기대지 않나 — 「폰을 켤 때 함께 시작」이면 서버가 홈보다 먼저 켜져 알림을
+     * 한 번 쏘고 끝나므로 홈은 영영 「…」였다(공기계 실측 2026-09-06). 알림이 오면 그 값으로 덮어쓴다.
+     */
+    private fun renderLocalServer(localIP: String? = null, publicIP: String? = null) {
+        val binding = _binding ?: return
+        if (!localServerSettings.enabled) return
+
+        val port = localServerSettings.port
+        binding.textLocalUsername.text = localServerSettings.username
+        binding.textLocalPassword.text = localServerSettings.password
+        binding.textLocalDeviceId.text = localServerSettings.deviceId ?: getString(R.string.n_a)
+
+        if (localIP != null || publicIP != null) {
+            binding.textLocalIP.text = localIP?.let { "$it:$port" } ?: getString(R.string.not_available)
+            binding.textPublicIP.text = publicIP?.let { "$it:$port" } ?: getString(R.string.not_available)
+            return
+        }
+
+        val appContext = requireContext().applicationContext
+        viewLifecycleOwner.lifecycleScope.launch {
+            val local = withContext(Dispatchers.IO) {
+                runCatching { LocalIPProvider(appContext).getIP() }.getOrNull()
+            }
+            _binding?.textLocalIP?.text =
+                local?.let { "$it:$port" } ?: appContext.getString(R.string.not_available)
+
+            val outside = withContext(Dispatchers.IO) {
+                runCatching { PublicIPProvider().getIP() }.getOrNull()
+            }
+            _binding?.textPublicIP?.text =
+                outside?.let { "$it:$port" } ?: appContext.getString(R.string.not_available)
+        }
     }
 
     private fun renderStatusChip(running: Boolean) {

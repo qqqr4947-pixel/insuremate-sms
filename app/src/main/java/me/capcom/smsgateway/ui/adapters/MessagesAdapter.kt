@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import me.capcom.smsgateway.data.entities.Message
 import me.capcom.smsgateway.databinding.ItemMessageBinding
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import me.capcom.smsgateway.domain.ProcessingState
 import me.capcom.smsgateway.ui.styles.bgRes
 import me.capcom.smsgateway.ui.styles.color
 import me.capcom.smsgateway.ui.styles.fgRes
@@ -18,7 +20,9 @@ import java.util.Locale
 import java.util.Date
 
 class MessagesAdapter(
-    private val onItemClickListener: OnItemClickListener<Message>
+    private val onItemClickListener: OnItemClickListener<Message>,
+    /** 실패한 줄의 「다시 보내기」 — 목록 화면이 큐에 새 줄로 넣는다 (im8) */
+    private val onResendClick: (Message) -> Unit = {},
 ) :
     ListAdapter<Message, MessagesAdapter.MessageViewHolder>(MessageDiffCallback()) {
 
@@ -34,16 +38,20 @@ class MessagesAdapter(
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = getItem(position)
 
-        holder.bind(message)
+        holder.bind(message, onResendClick)
     }
 
     class MessageViewHolder(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: Message) {
+        fun bind(message: Message, onResendClick: (Message) -> Unit) {
             val ctx = binding.root.context
+            // 「다시 보내기」는 실패한 줄에만
+            binding.buttonResend.isVisible = message.state == ProcessingState.Failed
+            binding.buttonResend.setOnClickListener { onResendClick(message) }
             // 표 번호(UUID) 대신 «보낸 내용» — 사람은 자기 문자를 번호로 기억하지 않는다.
             //   내용이 비어 있는 종류(자료 문자 등)면 그때만 번호를 보여 준다.
-            val body = message.content.trim()
+            //   저장은 {"text":"…"} 꼴(JSON)이라 글자만 꺼낸다 — im7 공기계에서 따옴표째 보였다(2026-09-06).
+            val body = (message.textContent?.text ?: message.content).trim()
             binding.textViewId.text = if (body.isNotEmpty()) body else message.id
             binding.textViewDate.text = formatWhen(message.createdAt)
             binding.textViewState.text = ctx.getString(message.state.labelRes)

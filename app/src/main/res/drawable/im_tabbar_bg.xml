@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 아래 탭바 알약 바탕 — im_surface · 라운딩 38 (폰앱 IMTabBar). 그림자는 android:elevation 으로.
+     MaterialCardView 를 안 쓰는 이유: 다크 테마의 elevation overlay 가 8dp 에서 바탕을 밝게 섞어 토큰 색이 어긋난다. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/im_surface" />
+    <corners android:radius="@dimen/im_tabbar_r" />
+</shape>

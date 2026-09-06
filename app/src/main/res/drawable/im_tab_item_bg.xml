@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 아래 탭바 항목 배경 — 선택된 탭만 파란 둥근 네모(50 x 50 · 라운딩 17), 나머지는 투명 (폰앱 IMTabBar 와 같음) -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/im_blue" />
+            <corners android:radius="@dimen/im_tab_item_r" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <corners android:radius="@dimen/im_tab_item_r" />
+        </shape>
+    </item>
+</selector>

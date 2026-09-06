@@ -21,4 +21,13 @@
     <dimen name="im_switch_w">48dp</dimen>
     <dimen name="im_switch_h">27dp</dimen>
     <dimen name="im_switch_inset">3dp</dimen>
+    <!-- 아래 탭바 = 폰앱 IMTabBar(INSUREMATE/im-shared.jsx) 그대로 — 바닥 14 · 높이 66 · 라운딩 38 · 항목 50 라운딩 17 · 아이콘 24.
+         본문은 탭바에 마지막 카드가 안 가리게 14+66+14 = 94 를 아래 여백으로 (im8 · 2026-09-06) -->
+    <dimen name="im_tabbar_margin">14dp</dimen>
+    <dimen name="im_tabbar_h">66dp</dimen>
+    <dimen name="im_tabbar_r">38dp</dimen>
+    <dimen name="im_tabbar_pad">10dp</dimen>
+    <dimen name="im_tab_item">50dp</dimen>
+    <dimen name="im_tab_item_r">17dp</dimen>
+    <dimen name="im_content_bottom">94dp</dimen>
 </resources>

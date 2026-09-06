@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 세그먼트 칸 = 키트 tui-seg > button (라운딩 8). 켜진 칸(is-on)은 승격면(im_elevated).
+     HolderFragment 는 «고른 쪽을 enabled=false» 로 표시하므로 state_enabled=false 가 켜진 칸이다. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/im_elevated" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</selector>

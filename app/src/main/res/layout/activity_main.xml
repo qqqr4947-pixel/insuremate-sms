@@ -1,52 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 화면 틀 — 본문(ViewPager2) 위에 «떠 있는» 아래 탭바. 폰앱 IMTabBar 와 같은 자리·크기 (im8 · 2026-09-06) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/im_bg"
-    android:orientation="vertical"
-    android:gravity="center"
     tools:context=".MainActivity">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/im_surface"
-        app:tabIconTint="@color/im_tab_icon"
-        app:tabIndicatorColor="@color/im_blue"
-        app:tabIndicatorHeight="2dp"
-        app:tabSelectedTextColor="@color/im_blue"
-        app:tabTextColor="@color/im_sub" />
+        android:layout_height="match_parent" />
 
     <FrameLayout
+        android:id="@+id/progressBar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:background="@color/progressBarOverlay"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <FrameLayout
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/progressBarOverlay"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:indeterminate="true" />
-        </FrameLayout>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
     </FrameLayout>
 
+    <!-- 아래 탭바: 바닥 14 띄운 알약(높이 66 · 라운딩 38 · 흰 바탕 + 그림자). 선택 탭만 파란 네모 안 흰 아이콘 -->
+    <FrameLayout
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/im_tabbar_h"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/im_tabbar_margin"
+        android:background="@drawable/im_tabbar_bg"
+        android:elevation="8dp"
+        android:outlineProvider="background">
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/im_tabbar_pad">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/tabHome"
+                    android:layout_width="@dimen/im_tab_item"
+                    android:layout_height="@dimen/im_tab_item"
+                    android:layout_gravity="center"
+                    android:background="@drawable/im_tab_item_bg"
+                    android:contentDescription="@string/tab_text_home"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/im_tab_icon_sel" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/tabMessages"
+                    android:layout_width="@dimen/im_tab_item"
+                    android:layout_height="@dimen/im_tab_item"
+                    android:layout_gravity="center"
+                    android:background="@drawable/im_tab_item_bg"
+                    android:contentDescription="@string/tab_text_messages"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_sms"
+                    app:tint="@color/im_tab_icon_sel" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/tabSettings"
+                    android:layout_width="@dimen/im_tab_item"
+                    android:layout_height="@dimen/im_tab_item"
+                    android:layout_gravity="center"
+                    android:background="@drawable/im_tab_item_bg"
+                    android:contentDescription="@string/tab_text_settings"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_advanced"
+                    app:tint="@color/im_tab_icon_sel" />
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>
