@@ -25,6 +25,9 @@
     <string name="im_permission_title">문자 보내기 권한</string>
     <string name="im_permission_sub">이 앱이 문자를 보내려면 필요해요</string>
     <string name="im_permission_button">권한 켜기</string>
+    <string name="im_battery_title">배터리 최적화 제외</string>
+    <string name="im_battery_sub">폰이 잠들어도 문자가 나가게 해요</string>
+    <string name="im_battery_button">제외하기</string>
     <string name="im_recent_title">최근 보낸 문자</string>
     <string name="im_recent_empty">아직 보낸 문자가 없어요</string>
     <string name="im_advanced">고급</string>
