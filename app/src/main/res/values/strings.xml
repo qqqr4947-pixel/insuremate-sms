@@ -13,10 +13,16 @@
     <string name="im_state_off">Sending off</string>
     <string name="im_connect_title">Connect to my server</string>
     <string name="im_connect_code_label">Connect code, from “Connect phone” on the PC</string>
-    <string name="im_connect_code_hint">IM-XXXX-XXXX</string>
+    <string name="im_connect_code_hint">XXXX-XXXX-XXXX</string>
     <string name="im_connect_sim_notice">Connects only when this phone\'s SIM number matches the number registered in InsureMate.</string>
     <string name="im_connect_button">Connect</string>
     <string name="im_connect_code_required">Enter the connect code shown on the PC</string>
+    <string name="im_scan_qr">Scan QR</string>
+    <string name="im_scan_qr_sub">Scan the QR on the PC “Connect phone” screen — the code is filled in and connected right away</string>
+    <string name="im_scan_or_type">Or type the code</string>
+    <string name="im_scan_prompt">Fit the QR on the PC screen inside the box</string>
+    <string name="im_scan_not_code">This QR is not an InsureMate connect code — scan the one on the PC “Connect phone” screen</string>
+    <string name="im_scan_camera_denied">Camera permission is off — enable it in phone settings, or type the code below</string>
     <string name="im_today_sent">Sent today</string>
     <string name="im_today_of">%1$d / %2$d</string>
     <string name="im_failed">Failed</string>

@@ -23,6 +23,8 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -153,6 +155,9 @@ class HomeFragment : Fragment() {
         binding.buttonBattery.setOnClickListener { requestIgnoreBatteryOptimizations() }
 
         binding.buttonConnect.setOnClickListener { actionConnect() }
+
+        // im10 · 「QR 찍기」 — 카메라 권한이 있으면 바로 찍고, 없으면 묻고 나서 찍는다
+        binding.buttonScanQr.setOnClickListener { actionScanQr() }
 
         binding.switchService.setOnCheckedChangeListener { _, isChecked ->
             if (muteSwitches) return@setOnCheckedChangeListener
@@ -427,6 +432,51 @@ class HomeFragment : Fragment() {
     }
 
     // ══════════ 동작 ══════════
+
+    /** 「QR 찍기」 — PC 「폰 연결하기」의 QR(코드가 실린 설치 주소 · /sms?c=코드)을 카메라로 읽어 코드를 채우고 바로 연결한다 (im10 · 박 대표 2026-09-21) */
+    private fun actionScanQr() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            cameraPermissionRequest.launch(Manifest.permission.CAMERA)
+            return
+        }
+        launchScanner()
+    }
+
+    private fun launchScanner() {
+        val options = ScanOptions()
+            .setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+            .setPrompt(getString(R.string.im_scan_prompt))
+            .setBeepEnabled(false)
+            .setOrientationLocked(false)
+        scanLauncher.launch(options)
+    }
+
+    private val cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) launchScanner()
+        else Toast.makeText(requireContext(), getString(R.string.im_scan_camera_denied), Toast.LENGTH_LONG).show()
+    }
+
+    private val scanLauncher = registerForActivityResult(ScanContract()) { result ->
+        val raw = result.contents ?: return@registerForActivityResult   // 뒤로 가기 = 아무 일 없음
+        val code = connectCodeFrom(raw)
+        if (code == null) {
+            Toast.makeText(requireContext(), getString(R.string.im_scan_not_code), Toast.LENGTH_LONG).show()
+            return@registerForActivityResult
+        }
+        binding.editConnectCode.setText(code)
+        actionConnect()   // 찍자마자 연결(박 대표 「바로 될 수 있게」) — 실패하면 기존 흐름이 그 이유를 말한다
+    }
+
+    /** QR 안의 글자에서 연결 코드만 — 설치 주소(`…/sms?c=코드&e=…`)면 c 값, 코드만 찍힌 QR 이면 그 글자. 12자 영숫자(대시는 무시)가 아니면 null */
+    private fun connectCodeFrom(raw: String): String? {
+        val text = raw.trim()
+        val fromUrl = runCatching {
+            val uri = Uri.parse(text)
+            if (uri.host?.endsWith("insuremate.co.kr") == true) uri.getQueryParameter("c") else null
+        }.getOrNull()
+        val candidate = (fromUrl ?: text).uppercase().replace("-", "").trim()   // 코드가 IM 으로 시작할 수도 있어 앞글자를 떼지 않는다
+        return candidate.takeIf { Regex("^[A-Z0-9]{12}$").matches(it) }
+    }
 
     /** 「연결하기」 — 연결 코드를 저장하고 내 서버를 켠 뒤 등록을 시작한다 */
     private fun actionConnect() {
