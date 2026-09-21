@@ -5,8 +5,13 @@
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="true" />
+    <!-- im10 · 연결 코드 QR 찍기 — 카메라는 «있으면» 쓴다(없는 폰에도 깔린다 · 손으로 치는 길이 남아 있다) -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MANAGE_SUBSCRIPTION_USER_ASSOCIATION" />

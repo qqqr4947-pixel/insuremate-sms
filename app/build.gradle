@@ -113,6 +113,11 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
+    // im10 · 연결 코드 QR 찍기 — PC 「폰 연결하기」 QR 을 카메라로 읽어 코드를 채운다(박 대표 2026-09-21 「카메라 연동돼서 찍어서 되게」).
+    //   ZXing(Apache-2.0 · 원본 앱과 같은 라이선스) · 오프라인에서도 읽는다 · minSdk 21 이라 transitive 를 끄고 core 를 따로 든다(4.x 문서의 API<24 방식)
+    implementation('com.journeyapps:zxing-android-embedded:4.3.0') { transitive = false }
+    implementation('com.google.zxing:core:3.3.0')
+
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
 
     implementation("androidx.room:room-ktx:$room_version")

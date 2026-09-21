@@ -127,11 +127,39 @@
                         android:textSize="15sp"
                         tools:text="sms.insuremate.co.kr" />
 
+                    <!-- im10 · 「QR 찍기」가 주된 길(파랑 · 큰 단추) — PC 「폰 연결하기」 QR 을 찍으면 코드가 채워지고 바로 연결. 손으로 치는 칸은 그 아래 그대로(카메라 없는 폰·권한 거절 대비) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonScanQr"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/im_btn_h"
+                        android:layout_marginTop="14dp"
+                        android:backgroundTint="@color/im_blue"
+                        android:letterSpacing="0"
+                        android:text="@string/im_scan_qr"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="@dimen/im_btn_r"
+                        app:elevation="0dp"
+                        app:icon="@drawable/ic_qr_scan"
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="3dp"
+                        android:text="@string/im_scan_qr_sub"
+                        android:textColor="@color/im_sub"
+                        android:textSize="13sp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:text="@string/im_connect_code_label"
+                        android:text="@string/im_scan_or_type"
                         android:textColor="@color/im_sub"
                         android:textSize="13sp" />
 
@@ -165,16 +193,17 @@
                         android:textColor="@color/im_sub"
                         android:textSize="13sp" />
 
+                    <!-- im10 · 손으로 친 코드의 「연결하기」는 둘째 길 → 연한 파랑(키트 tint 단추) · 첫째 길은 위 「QR 찍기」 -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonConnect"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/im_btn_h"
                         android:layout_marginTop="14dp"
-                        android:backgroundTint="@color/im_blue"
+                        android:backgroundTint="@color/im_blue_tint"
                         android:letterSpacing="0"
                         android:text="@string/im_connect_button"
                         android:textAllCaps="false"
-                        android:textColor="@color/white"
+                        android:textColor="@color/im_on_tint"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:cornerRadius="@dimen/im_btn_r"
