@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import me.capcom.smsgateway.modules.calls.CallRequestHandler
 import me.capcom.smsgateway.modules.events.ExternalEvent
 import me.capcom.smsgateway.modules.events.ExternalEventType
 import me.capcom.smsgateway.modules.gateway.GatewaySettings
@@ -22,11 +23,17 @@ class PushService : FirebaseMessagingService(), KoinComponent {
 
     override fun onNewToken(token: String) {
         RegistrationWorker.start(this@PushService, token, true)
+        CallRequestHandler.reportPushToken(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         try {
             Log.d(this.javaClass.name, message.data.toString())
+
+            if (message.data["event"] == CallRequestHandler.EVENT) {
+                CallRequestHandler.handle(this, message.data["data"])
+                return
+            }
 
             val event = message.data["event"]?.let { ExternalEventType.valueOf(it) }
                 ?: ExternalEventType.MessageEnqueued
@@ -97,6 +104,8 @@ class PushService : FirebaseMessagingService(), KoinComponent {
 
                 // Log and toast
                 RegistrationWorker.start(context, token, false)
+                // im11 · 앱이 켜질 때마다 알림 주소를 우리 서버에도 알린다(업데이트만 한 앱도 첫 보고가 된다)
+                CallRequestHandler.reportPushToken(token)
             }
         }
     }

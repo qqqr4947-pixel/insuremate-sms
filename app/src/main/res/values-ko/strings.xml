@@ -5,6 +5,8 @@
     <string name="app_version_build">앱 판 (빌드)</string>
     <string name="about_origin_title">SMSGate(capcom6) 기반 · Apache-2.0</string>
     <string name="about_origin_summary">바꾼 것: 이름·아이콘·색·한국어·기본값</string>
+    <string name="about_licenses_title">오픈소스 라이선스</string>
+    <string name="about_licenses_body">Apache License 2.0 에 따라 씁니다 — http://www.apache.org/licenses/LICENSE-2.0</string>
 
     <!-- 홈 화면 (인슈어메이트 배치) -->
     <string name="im_state_connected">연결됨</string>
@@ -222,4 +224,13 @@
     <string name="filter_sms_count">SMS (%1$d)</string>
     <string name="filter_data_sms_count">데이터 SMS (%1$d)</string>
     <string name="filter_mms_count">MMS (%1$d)</string>
+    <string name="call_channel_name">전화 요청</string>
+    <string name="call_title">전화 요청</string>
+    <string name="call_locked_title">인슈어메이트 · 전화 요청이 왔어요</string>
+    <string name="call_action">전화 걸기</string>
+    <string name="call_fetch_failed">번호를 못 받았어요 · PC 에서 다시 눌러 주세요</string>
+    <string name="im_overlay_title">PC 전화 걸기</string>
+    <string name="im_overlay_sub">PC 에서 누르면 이 폰에 전화 화면이 바로 떠요</string>
+    <string name="im_overlay_button">켜기</string>
+    <string name="im_back">뒤로</string>
 </resources>

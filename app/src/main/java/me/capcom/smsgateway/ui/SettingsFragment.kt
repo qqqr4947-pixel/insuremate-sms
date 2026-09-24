@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.text.InputType
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import me.capcom.smsgateway.BuildConfig
@@ -73,6 +74,19 @@ class SettingsFragment : BasePreferenceFragment() {
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         if (preference.key == "system.disable_battery_optimizations") {
             requestIgnoreBatteryOptimizations()
+            return true
+        }
+
+        if (preference.key == "transient.about_origin") {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.about_licenses_title)
+                .setMessage(
+                    getString(R.string.about_origin_title) + "\n" +
+                        getString(R.string.about_origin_summary) + "\n\n" +
+                        getString(R.string.about_licenses_body)
+                )
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
             return true
         }
 

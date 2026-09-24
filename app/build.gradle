@@ -20,6 +20,8 @@ android {
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // im11 · 전화 요청 — 우리 서버 함수 주소. 시험 빌드만 -PimApiBase=http://127.0.0.1:5001/black-c8696/asia-northeast3 (USB adb reverse)
+        buildConfigField "String", "IM_API_BASE", "\"${project.findProperty('imApiBase') ?: 'https://asia-northeast3-black-c8696.cloudfunctions.net'}\""
     }
     buildFeatures {
         viewBinding true

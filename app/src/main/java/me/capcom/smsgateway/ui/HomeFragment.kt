@@ -153,6 +153,7 @@ class HomeFragment : Fragment() {
         binding.buttonPermission.setOnClickListener { requestPermissionsAndStart() }
 
         binding.buttonBattery.setOnClickListener { requestIgnoreBatteryOptimizations() }
+        binding.buttonOverlay.setOnClickListener { requestOverlay() }
 
         binding.buttonConnect.setOnClickListener { actionConnect() }
 
@@ -280,6 +281,8 @@ class HomeFragment : Fragment() {
         binding.cardStatus.isVisible = registered || usesLocal
         binding.cardPermission.isVisible = !hasSendPermission()
         binding.cardBattery.isVisible = !isIgnoringBatteryOptimizations()
+        // im11 · PC 「전화 걸기」 — 연결된 사람만 · «다른 앱 위에 표시»가 꺼져 있을 때만
+        binding.cardOverlay.isVisible = registered && !canDrawOverlays()
         binding.cardLocalServer.isVisible = usesLocal
         binding.cardRecent.isVisible = registered || usesLocal
 
@@ -534,6 +537,17 @@ class HomeFragment : Fragment() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
         val pm = requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager
         return pm.isIgnoringBatteryOptimizations(requireContext().packageName)
+    }
+
+    private fun canDrawOverlays(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(requireContext())
+
+    /** 설정 «다른 앱 위에 표시» 화면으로 — 켜고 돌아오면 onResume 에서 카드가 숨는다 */
+    private fun requestOverlay() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        startActivity(
+            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${requireContext().packageName}"))
+        )
     }
 
     private fun requestIgnoreBatteryOptimizations() {

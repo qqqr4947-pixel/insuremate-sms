@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import me.capcom.smsgateway.R
@@ -42,6 +43,14 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
         list.clipToPadding = false
         list.addItemDecoration(ImCardDecoration(requireContext()) { preferenceScreen })
         return list
+    }
+
+    /** 안쪽 화면을 여는 줄이면 그 이름을 머리줄 «← 이름»에 넘긴다(im11) */
+    override fun onPreferenceTreeClick(preference: Preference): Boolean {
+        if (preference.fragment != null) {
+            (activity as? me.capcom.smsgateway.MainActivity)?.pushBackTitle(preference.title)
+        }
+        return super.onPreferenceTreeClick(preference)
     }
 
     protected fun showToast(message: String) {

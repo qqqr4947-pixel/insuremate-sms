@@ -6,6 +6,8 @@
     <string name="app_version_build">App version (build)</string>
     <string name="about_origin_title">Based on SMSGate (capcom6) · Apache-2.0</string>
     <string name="about_origin_summary">Changed: name, icon, colors, Korean, defaults</string>
+    <string name="about_licenses_title">Open-source licenses</string>
+    <string name="about_licenses_body">Licensed under the Apache License, Version 2.0 — http://www.apache.org/licenses/LICENSE-2.0</string>
 
     <!-- Home screen, InsureMate layout -->
     <string name="im_state_connected">Connected</string>
@@ -251,4 +253,13 @@
     <string name="filter_sms_count">SMS (%1$d)</string>
     <string name="filter_data_sms_count">Data SMS (%1$d)</string>
     <string name="filter_mms_count">MMS (%1$d)</string>
+    <string name="call_channel_name">Call requests</string>
+    <string name="call_title">Call request</string>
+    <string name="call_locked_title">InsureMate · You have a call request</string>
+    <string name="call_action">Call</string>
+    <string name="call_fetch_failed">Couldn\'t get the number · press Call again on the PC</string>
+    <string name="im_overlay_title">Call from PC</string>
+    <string name="im_overlay_sub">Opens the dialer here when you press Call on the PC</string>
+    <string name="im_overlay_button">Turn on</string>
+    <string name="im_back">Back</string>
 </resources>

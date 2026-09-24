@@ -41,7 +41,32 @@ class MainActivity : AppCompatActivity() {
         })
         tabs[binding.viewPager.currentItem].isSelected = true
 
+        // im11 · 설정 안쪽 화면 «← 화면 이름» — 안쪽 화면은 같은 칸을 갈아 끼우므로(뒤로 쌓기) 쌓인 수로 보인다/숨는다
+        binding.backButton.setOnClickListener { supportFragmentManager.popBackStack() }
+        supportFragmentManager.addOnBackStackChangedListener {
+            while (backTitles.size > supportFragmentManager.backStackEntryCount) backTitles.removeAt(backTitles.size - 1)
+            renderBackBar()
+        }
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) = renderBackBar()
+        })
+
         processIntent(intent)
+    }
+
+    private val backTitles = mutableListOf<CharSequence>()
+
+    /** 설정 줄을 눌러 안쪽 화면을 열 때 그 줄 이름을 기억한다(BasePreferenceFragment 가 부른다) */
+    fun pushBackTitle(title: CharSequence?) {
+        // 메뉴 이름 끝의 «…»(더 있음 표시)는 머리줄에선 뗀다
+        backTitles.add((title ?: "").toString().trimEnd('…', '.', ' '))
+    }
+
+    private fun renderBackBar() {
+        val inside = binding.viewPager.currentItem == TAB_INDEX_SETTINGS &&
+            supportFragmentManager.backStackEntryCount > 0
+        binding.backBar.visibility = if (inside) android.view.View.VISIBLE else android.view.View.GONE
+        binding.backTitle.text = backTitles.lastOrNull() ?: ""
     }
 
     override fun onNewIntent(intent: Intent) {

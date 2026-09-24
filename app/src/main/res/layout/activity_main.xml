@@ -8,10 +8,54 @@
     android:background="@color/im_bg"
     tools:context=".MainActivity">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- im11 · 설정 안쪽 화면 머리줄 «← 화면 이름» — 안쪽에 들어갔을 때만 보인다(박 대표 2026-09-24 「뒤로가는 버튼이 없다」) -->
+        <LinearLayout
+            android:id="@+id/backBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/im_appbar"
+            android:background="@color/im_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="@dimen/im_page"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/im_back"
+                android:scaleType="center"
+                android:src="@drawable/ic_im_back"
+                app:tint="@color/im_ink" />
+
+            <TextView
+                android:id="@+id/backTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/im_ink"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="내 서버" />
+        </LinearLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/progressBar"

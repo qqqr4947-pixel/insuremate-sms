@@ -56,5 +56,7 @@
             app:enableCopying="true"
             app:persistent="false" />
     </PreferenceCategory>
-    <Preference app:summary="@string/restart_required_to_apply_changes" />
+    <Preference
+        android:icon="@drawable/ic_retry"
+        app:summary="@string/restart_required_to_apply_changes" />
 </PreferenceScreen>
