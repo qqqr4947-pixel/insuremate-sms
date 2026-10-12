@@ -266,6 +266,7 @@
     <string name="im_restricted_title">Can\'t tap «Allow»?</string>
     <string name="im_restricted_sub">Tap the button below → ⋮ at top right → «Allow restricted settings» → come back and tap «Turn on»</string>
     <string name="im_app_settings_button">Open app settings</string>
+    <string name="im_restricted_toast">Tap ⋮ at top right → «Allow restricted settings», then come back and tap «Turn on» again</string>
     <string name="im_advanced_show">Advanced settings</string>
     <string name="im_advanced_hide">Hide advanced settings</string>
 </resources>

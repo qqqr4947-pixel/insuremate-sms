@@ -666,6 +666,13 @@ class HomeFragment : Fragment() {
             Log.d(javaClass.name, "Permissions granted")
         }
 
+        // im12 · 문자 권한이 막혔으면(새 폰은 인터넷으로 받은 앱을 «제한된 설정»으로 막는다) 앱 설정을 바로 연다 —
+        // 그 화면 오른쪽 위 ⋮ 에 «제한된 설정 허용»이 있다. 돌아오면 onResume 이 다시 재서 «권한 켜기»가 남는다 (박 대표 10-12 「앱설정열기 되도록」)
+        if (result[Manifest.permission.SEND_SMS] == false && _binding != null) {
+            Toast.makeText(requireContext(), getString(R.string.im_restricted_toast), Toast.LENGTH_LONG).show()
+            openAppDetails()
+        }
+
         start()
         if (_binding != null) {
             renderCards()
