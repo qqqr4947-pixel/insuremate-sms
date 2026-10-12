@@ -89,6 +89,9 @@ class HomeFragment : Fragment() {
     /** im12 · 「고급」 카드는 접어 두고 맨 아래 «고급 설정»을 눌렀을 때만 편다 */
     private var showAdvanced = false
 
+    /** im12 · «허용이 안 눌리면» 카드는 문자 권한이 한 번 막힌 뒤에만 보인다(처음엔 권한 카드 하나만) */
+    private var permissionBlockedOnce = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -155,6 +158,10 @@ class HomeFragment : Fragment() {
 
         binding.buttonPermission.setOnClickListener { requestPermissionsAndStart() }
         binding.buttonAppSettings.setOnClickListener { openAppDetails() }
+        binding.buttonTypeCode.setOnClickListener {
+            binding.layoutTypeCode.isVisible = true
+            binding.buttonTypeCode.isVisible = false
+        }
         binding.buttonAdvanced.setOnClickListener {
             showAdvanced = !showAdvanced
             renderCards()
@@ -302,7 +309,7 @@ class HomeFragment : Fragment() {
         if (!ready) binding.textStep.text = getString(R.string.im_step_of, step, SETUP_STEPS)
 
         binding.cardPermission.isVisible = step == 1
-        binding.cardRestricted.isVisible = step == 1
+        binding.cardRestricted.isVisible = step == 1 && permissionBlockedOnce
         binding.cardBattery.isVisible = step == 2
         binding.cardConnect.isVisible = step == 3
         binding.cardStatus.isVisible = ready
@@ -669,6 +676,7 @@ class HomeFragment : Fragment() {
         // im12 · 문자 권한이 막혔으면(새 폰은 인터넷으로 받은 앱을 «제한된 설정»으로 막는다) 앱 설정을 바로 연다 —
         // 그 화면 오른쪽 위 ⋮ 에 «제한된 설정 허용»이 있다. 돌아오면 onResume 이 다시 재서 «권한 켜기»가 남는다 (박 대표 10-12 「앱설정열기 되도록」)
         if (result[Manifest.permission.SEND_SMS] == false && _binding != null) {
+            permissionBlockedOnce = true
             Toast.makeText(requireContext(), getString(R.string.im_restricted_toast), Toast.LENGTH_LONG).show()
             openAppDetails()
         }

@@ -172,13 +172,25 @@
                         android:textColor="@color/im_sub"
                         android:textSize="13sp" />
 
-                    <TextView
+                    <!-- im12 · 코드 직접 넣기는 접어 둔다 — QR 이 안 될 때만 눌러서 편다(박 대표 「최대한 단순화」) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonTypeCode"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="6dp"
+                        android:letterSpacing="0"
                         android:text="@string/im_scan_or_type"
+                        android:textAllCaps="false"
                         android:textColor="@color/im_sub"
-                        android:textSize="13sp" />
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutTypeCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/layoutConnectCode"
@@ -225,6 +237,7 @@
                         android:textStyle="bold"
                         app:cornerRadius="@dimen/im_btn_r"
                         app:elevation="0dp" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
