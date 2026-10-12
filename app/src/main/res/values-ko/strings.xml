@@ -233,4 +233,11 @@
     <string name="im_overlay_sub">PC 에서 누르면 이 폰에 전화 화면이 바로 떠요</string>
     <string name="im_overlay_button">켜기</string>
     <string name="im_back">뒤로</string>
+    <!-- im12 · 첫 화면 «한 번에 하나만» (박 대표 2026-10-12 「첫화면 더 심플하게 · 다른거 안헷갈리게」) -->
+    <string name="im_step_of">%1$d / %2$d · 지금 할 일</string>
+    <string name="im_restricted_title">«허용»이 안 눌리면</string>
+    <string name="im_restricted_sub">아래 단추 → 오른쪽 위 ⋮ → «제한된 설정 허용» → 이 앱으로 돌아와 «권한 켜기»</string>
+    <string name="im_app_settings_button">앱 설정 열기</string>
+    <string name="im_advanced_show">고급 설정</string>
+    <string name="im_advanced_hide">고급 설정 닫기</string>
 </resources>

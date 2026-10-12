@@ -124,6 +124,10 @@ class GatewayService(
                 if (e.response.status != HttpStatusCode.Unauthorized) {
                     throw e
                 }
+                // im12 · 서버가 이 폰을 모른다(PC 「연결 끊기」 등) — 옛 연결 정보를 지운다.
+                // 안 지우면 홈이 «연결됨»으로 믿고 연결 칸을 영영 안 보였다(10-12 실측 · 다시 연결 불가).
+                // 아래 새 등록이 성공하면 새 정보로 채워지고, 실패하면 홈이 ③ 연결 단계로 돌아간다.
+                this.settings.registrationInfo = null
             }
         }
 

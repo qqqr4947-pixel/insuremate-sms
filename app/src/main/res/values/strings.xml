@@ -262,4 +262,10 @@
     <string name="im_overlay_sub">Opens the dialer here when you press Call on the PC</string>
     <string name="im_overlay_button">Turn on</string>
     <string name="im_back">Back</string>
+    <string name="im_step_of">%1$d / %2$d · Next step</string>
+    <string name="im_restricted_title">Can\'t tap «Allow»?</string>
+    <string name="im_restricted_sub">Tap the button below → ⋮ at top right → «Allow restricted settings» → come back and tap «Turn on»</string>
+    <string name="im_app_settings_button">Open app settings</string>
+    <string name="im_advanced_show">Advanced settings</string>
+    <string name="im_advanced_hide">Hide advanced settings</string>
 </resources>

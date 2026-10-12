@@ -86,6 +86,9 @@ class HomeFragment : Fragment() {
     /** 코드로 스위치를 바꿀 때 리스너가 되받아 도는 것을 막는다 */
     private var muteSwitches = false
 
+    /** im12 · 「고급」 카드는 접어 두고 맨 아래 «고급 설정»을 눌렀을 때만 편다 */
+    private var showAdvanced = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -151,6 +154,11 @@ class HomeFragment : Fragment() {
         }
 
         binding.buttonPermission.setOnClickListener { requestPermissionsAndStart() }
+        binding.buttonAppSettings.setOnClickListener { openAppDetails() }
+        binding.buttonAdvanced.setOnClickListener {
+            showAdvanced = !showAdvanced
+            renderCards()
+        }
 
         binding.buttonBattery.setOnClickListener { requestIgnoreBatteryOptimizations() }
         binding.buttonOverlay.setOnClickListener { requestOverlay() }
@@ -269,22 +277,41 @@ class HomeFragment : Fragment() {
 
     // ══════════ 그리기 ══════════
 
-    /** 어떤 카드를 보일지 — 연결 전이면 연결 카드, 연결되면 상태 카드.
-     *  상태 카드(내 번호·오늘 보냄·「보내기」 스위치)는 내 서버와 무관하므로 **폰 안 서버만 쓰는 사람에게도** 보인다 —
-     *  그래야 그 사람도 켜고 끌 자리가 있다(im7 까지는 자동 시작 말고 켤 길이 없었다). */
+    /** 어떤 카드를 보일지 — im12 «한 번에 하나만» (박 대표 2026-10-12 「첫화면 더 심플하게 · 다른거 안헷갈리게」).
+     *  준비 순서 = ① 문자 권한 → ② 배터리 최적화 제외 → ③ PC 와 연결. 연결 코드는 10분이면 만료되므로 맨 끝에 둔다
+     *  (전엔 코드를 먼저 받고 권한·제한된 설정을 푸는 사이 만료돼 «코드 연결까지 못 간다»가 나왔다).
+     *  준비가 끝나면 상태 카드(+ PC 전화 걸기가 꺼져 있으면 그 카드)만. 최근 문자는 아래 «문자» 탭에 있다.
+     *  폰 안 서버만 쓰는 사람은 연결 단계를 건너뛴다(상태 카드가 켜고 끌 자리라 늘 보인다 — im7). */
     private fun renderCards() {
         val binding = _binding ?: return
         val registered = gatewaySettings.registrationInfo != null
         val usesLocal = localServerSettings.enabled
+        val needPermission = !hasSendPermission()
+        val needBattery = !isIgnoringBatteryOptimizations()
+        val needConnect = !registered && !usesLocal
 
-        binding.cardConnect.isVisible = !registered
-        binding.cardStatus.isVisible = registered || usesLocal
-        binding.cardPermission.isVisible = !hasSendPermission()
-        binding.cardBattery.isVisible = !isIgnoringBatteryOptimizations()
+        val step = when {
+            needPermission -> 1
+            needBattery -> 2
+            needConnect -> 3
+            else -> 0
+        }
+        val ready = step == 0
+
+        binding.textStep.isVisible = !ready
+        if (!ready) binding.textStep.text = getString(R.string.im_step_of, step, SETUP_STEPS)
+
+        binding.cardPermission.isVisible = step == 1
+        binding.cardRestricted.isVisible = step == 1
+        binding.cardBattery.isVisible = step == 2
+        binding.cardConnect.isVisible = step == 3
+        binding.cardStatus.isVisible = ready
         // im11 · PC 「전화 걸기」 — 연결된 사람만 · «다른 앱 위에 표시»가 꺼져 있을 때만
-        binding.cardOverlay.isVisible = registered && !canDrawOverlays()
-        binding.cardLocalServer.isVisible = usesLocal
-        binding.cardRecent.isVisible = registered || usesLocal
+        binding.cardOverlay.isVisible = ready && registered && !canDrawOverlays()
+        binding.cardLocalServer.isVisible = ready && usesLocal
+        binding.cardRecent.isVisible = false
+        binding.cardAdvanced.isVisible = showAdvanced
+        binding.buttonAdvanced.text = getString(if (showAdvanced) R.string.im_advanced_hide else R.string.im_advanced_show)
 
         renderStatusChip(stateLiveData.value ?: false)
     }
@@ -492,9 +519,12 @@ class HomeFragment : Fragment() {
 
         gatewaySettings.privateToken = code
         gatewaySettings.enabled = true
+        // im12 · 「폰을 켤 때 함께 시작」을 저절로 켠다 — 설치 안내에서 따로 켜라던 걸음을 없앤다(고급 카드에서 끌 수 있다)
+        settingsHelper.autostart = true
 
         muteSwitches = true
         binding.switchUseRemoteServer.isChecked = true
+        binding.switchAutostart.isChecked = true
         muteSwitches = false
         binding.layoutRemoteServer.isVisible = true
 
@@ -537,6 +567,14 @@ class HomeFragment : Fragment() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
         val pm = requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager
         return pm.isIgnoringBatteryOptimizations(requireContext().packageName)
+    }
+
+    /** im12 · «앱 설정 열기» — 이 앱의 «앱 정보» 화면. 인터넷으로 받은 앱은 문자 권한 «허용»이 막히는데(제한된 설정),
+     *  그걸 푸는 «제한된 설정 허용»이 이 화면 오른쪽 위 ⋮ 안에 있다. 돌아오면 onResume 이 다시 재서 다음 단계로 간다 */
+    private fun openAppDetails() {
+        startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${requireContext().packageName}"))
+        )
     }
 
     private fun canDrawOverlays(): Boolean =
@@ -679,6 +717,7 @@ class HomeFragment : Fragment() {
 
     companion object {
         private const val RECENT_LIMIT = 3
+        private const val SETUP_STEPS = 3
 
         @JvmStatic
         fun newInstance() = HomeFragment()
