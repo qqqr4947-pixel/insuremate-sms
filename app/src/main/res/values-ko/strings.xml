@@ -12,7 +12,7 @@
     <string name="im_state_connected">연결됨</string>
     <string name="im_state_disconnected">연결 전</string>
     <string name="im_state_off">보내기 꺼짐</string>
-    <string name="im_connect_title">내 서버에 연결</string>
+    <string name="im_connect_title">PC와 연결해 주세요</string>
     <string name="im_connect_code_label">연결 코드 · PC 「폰 연결하기」에 뜬 것</string>
     <string name="im_connect_code_hint">XXXX-XXXX-XXXX</string>
     <string name="im_connect_sim_notice">이 폰의 유심 번호가 인슈어메이트에 등록한 내 번호와 같을 때만 연결돼요.</string>

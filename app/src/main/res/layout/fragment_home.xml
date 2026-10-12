@@ -123,10 +123,13 @@
                         android:layout_marginTop="14dp"
                         android:text="@string/server_address"
                         android:textColor="@color/im_sub"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:visibility="gone" />
 
+                    <!-- im12 · 서버 주소는 설계사가 몰라도 되는 값이라 감춘다(고급 카드에 그대로 있다) — id 는 코드가 쓰므로 남긴다 -->
                     <TextView
                         android:id="@+id/textConnectServer"
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
