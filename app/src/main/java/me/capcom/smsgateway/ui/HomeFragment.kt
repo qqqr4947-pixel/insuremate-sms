@@ -174,6 +174,7 @@ class HomeFragment : Fragment() {
 
         // im10 · 「QR 찍기」 — 카메라 권한이 있으면 바로 찍고, 없으면 묻고 나서 찍는다
         binding.buttonScanQr.setOnClickListener { actionScanQr() }
+        binding.buttonWebLink.setOnClickListener { actionWebLink() }
 
         binding.switchService.setOnCheckedChangeListener { _, isChecked ->
             if (muteSwitches) return@setOnCheckedChangeListener
@@ -280,6 +281,8 @@ class HomeFragment : Fragment() {
         renderCards()
         renderLocalServer()
         refreshCounters()
+
+        consumeWebLinkCode()
     }
 
     // ══════════ 그리기 ══════════
@@ -469,6 +472,28 @@ class HomeFragment : Fragment() {
     }
 
     // ══════════ 동작 ══════════
+
+    /** 「인슈어메이트로 연결하기」 — 폰 인터넷에 sms-connect.html 을 연다. 그 화면이 로그인 확인 → 연결 코드를 받아
+     *  코드를 실어 이 앱을 다시 켠다(MainActivity → onResume 의 takePendingConnectCode). PC 도 코드 붙여 넣기도 필요 없다 (박 대표 2026-10-13) */
+    private fun actionWebLink() {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(WEB_LINK_URL)))
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), getString(R.string.im_web_link_no_browser), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** 인터넷에서 넘겨받은 코드가 있으면 칸에 채우고 바로 연결 — QR 을 찍었을 때와 같은 길 */
+    private fun consumeWebLinkCode() {
+        val raw = MainActivity.takePendingConnectCode() ?: return
+        val code = connectCodeFrom(raw)
+        if (code == null) {
+            Toast.makeText(requireContext(), getString(R.string.im_scan_not_code), Toast.LENGTH_LONG).show()
+            return
+        }
+        binding.editConnectCode.setText(code)
+        actionConnect()
+    }
 
     /** 「QR 찍기」 — PC 「폰 연결하기」의 QR(코드가 실린 설치 주소 · /sms?c=코드)을 카메라로 읽어 코드를 채우고 바로 연결한다 (im10 · 박 대표 2026-09-21) */
     private fun actionScanQr() {
@@ -733,6 +758,7 @@ class HomeFragment : Fragment() {
     companion object {
         private const val RECENT_LIMIT = 3
         private const val SETUP_STEPS = 3
+        private const val WEB_LINK_URL = "https://insuremate.co.kr/sms-connect.html"
 
         @JvmStatic
         fun newInstance() = HomeFragment()

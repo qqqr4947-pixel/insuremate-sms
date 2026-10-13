@@ -91,6 +91,8 @@ class EventsReceiver : EventsReceiver() {
 
                     if (!settings.enabled) return@collect
                     if (settings.fcmToken != null) return@collect
+                    // im12 · 연결 실패(만료·틀린 코드)에도 이 사건이 온다 — 그때 켜면 연결 정보가 없어 앱이 죽었다(10-13 실측)
+                    if (it !is DeviceRegisteredEvent.Success) return@collect
 
                     SSEForegroundService.start(get())
                 }

@@ -100,6 +100,13 @@ class SSEForegroundService : Service() {
 
         startForeground(NotificationsService.NOTIFICATION_ID_REALTIME_EVENTS, notification)
 
+        // im12 · 연결 정보가 없으면(연결 실패·연결 끊김 뒤 시스템이 다시 켠 경우) 조용히 멈춘다 — 전엔 여기서 앱이 죽고 되살아나며 또 죽었다
+        if (settings.registrationInfo?.token == null) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        sseStarted = true
         sseManager.connect()
 
         return super.onStartCommand(intent, flags, startId)
@@ -125,8 +132,11 @@ class SSEForegroundService : Service() {
         )
     }
 
+    /** sseManager 는 연결 정보로 만든다 — 연결 없이 멈출 때 꺼내면(onDestroy) 그 자리에서 앱이 죽는다 */
+    private var sseStarted = false
+
     override fun onDestroy() {
-        sseManager.disconnect()
+        if (sseStarted) sseManager.disconnect()
         if (wifiLock.isHeld) {
             wifiLock.release()
         }

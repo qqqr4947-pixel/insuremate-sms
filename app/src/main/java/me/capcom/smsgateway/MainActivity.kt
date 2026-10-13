@@ -75,6 +75,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processIntent(intent: Intent) {
+        // im12 · 인슈어메이트 «폰 연결» 화면(sms-connect.html)이 연결 코드를 실어 앱을 켠다 — 홈이 onResume 에서 받아 바로 연결
+        intent.getStringExtra(EXTRA_CONNECT_CODE)?.takeIf { it.isNotBlank() }?.let { pendingConnectCode = it }
+        intent.removeExtra(EXTRA_CONNECT_CODE)   // 화면을 돌리거나 다시 켤 때 같은 코드로 또 연결하지 않게
+
         val tabIndex = intent.getIntExtra(EXTRA_TAB_INDEX, TAB_INDEX_HOME)
 
         binding.viewPager.currentItem = tabIndex
@@ -101,6 +105,11 @@ class MainActivity : AppCompatActivity() {
         const val TAB_INDEX_SETTINGS = 2
 
         private const val EXTRA_TAB_INDEX = "tabIndex"
+        private const val EXTRA_CONNECT_CODE = "im_code"
+
+        /** 인터넷에서 넘겨받은 연결 코드 — 홈이 한 번 꺼내 쓰면 비운다 */
+        private var pendingConnectCode: String? = null
+        fun takePendingConnectCode(): String? = pendingConnectCode.also { pendingConnectCode = null }
 
         fun starter(context: Context, tabIndex: Int): Intent {
             return Intent(context, MainActivity::class.java).apply {

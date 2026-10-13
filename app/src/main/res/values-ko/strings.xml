@@ -12,14 +12,18 @@
     <string name="im_state_connected">연결됨</string>
     <string name="im_state_disconnected">연결 전</string>
     <string name="im_state_off">보내기 꺼짐</string>
-    <string name="im_connect_title">PC와 연결해 주세요</string>
+    <string name="im_connect_title">인슈어메이트와 연결해 주세요</string>
+    <!-- im12 · 폰 하나로 연결 (박 대표 2026-10-13 「pc 에 보고 치는 건 불편해」) -->
+    <string name="im_web_link">인슈어메이트로 연결하기</string>
+    <string name="im_web_link_sub">버튼을 누르면 인슈어메이트가 열렸다가 저절로 돌아와요. PC는 필요 없어요.</string>
+    <string name="im_web_link_no_browser">인터넷 앱을 열 수 없어요 — 크롬이나 삼성 인터넷이 켜지는지 확인해 주세요</string>
     <string name="im_connect_code_label">연결 코드 · PC 「폰 연결하기」에 뜬 것</string>
     <string name="im_connect_code_hint">XXXX-XXXX-XXXX</string>
     <string name="im_connect_sim_notice">이 폰의 유심 번호가 인슈어메이트에 등록한 내 번호와 같을 때만 연결돼요.</string>
     <string name="im_connect_button">연결하기</string>
     <string name="im_connect_code_required">PC 화면에 뜬 연결 코드를 넣어요</string>
     <!-- im10 · 연결 코드 QR 찍기 (박 대표 2026-09-21) -->
-    <string name="im_scan_qr">QR 찍기</string>
+    <string name="im_scan_qr">PC에 QR 이 떠 있으면 · QR 찍기</string>
     <string name="im_scan_qr_sub">PC 「폰 연결하기」에 뜬 QR 을 찍으면 끝나요</string>
     <string name="im_scan_or_type">QR 이 안 되면 · 코드 직접 넣기</string>
     <string name="im_scan_prompt">PC 화면의 QR 을 네모 안에 맞추세요</string>

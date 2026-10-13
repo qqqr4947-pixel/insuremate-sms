@@ -144,33 +144,49 @@
                         android:textSize="15sp"
                         tools:text="sms.insuremate.co.kr" />
 
-                    <!-- im10 · 「QR 찍기」가 주된 길(파랑 · 큰 단추) — PC 「폰 연결하기」 QR 을 찍으면 코드가 채워지고 바로 연결. 손으로 치는 칸은 그 아래 그대로(카메라 없는 폰·권한 거절 대비) -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonScanQr"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/im_btn_h"
-                        android:layout_marginTop="14dp"
-                        android:backgroundTint="@color/im_blue"
-                        android:letterSpacing="0"
-                        android:text="@string/im_scan_qr"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:cornerRadius="@dimen/im_btn_r"
-                        app:elevation="0dp"
-                        app:icon="@drawable/ic_qr_scan"
-                        app:iconGravity="textStart"
-                        app:iconTint="@color/white" />
-
+                    <!-- im12 · 주된 길 = 「인슈어메이트로 연결하기」(파랑 · 큰 단추) — 폰 인터넷에서 로그인만 확인하고 코드를 실어 앱으로 돌아온다.
+                         PC 를 켜서 QR 을 찾던 걸음이 막히는 곳이었다(박 대표 2026-10-13 「pc 에 보고 치는 건 불편해」) -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:lineSpacingExtra="3dp"
-                        android:text="@string/im_scan_qr_sub"
+                        android:text="@string/im_web_link_sub"
                         android:textColor="@color/im_sub"
-                        android:textSize="13sp" />
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonWebLink"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/im_btn_h"
+                        android:layout_marginTop="14dp"
+                        android:backgroundTint="@color/im_blue"
+                        android:letterSpacing="0"
+                        android:text="@string/im_web_link"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="@dimen/im_btn_r"
+                        app:elevation="0dp" />
+
+                    <!-- im10 · 「QR 찍기」 — PC 「폰 연결하기」 QR 을 찍으면 코드가 채워지고 바로 연결. im12 부터 둘째 길(PC 를 같이 켜 둔 사람) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonScanQr"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/im_btn_h"
+                        android:layout_marginTop="10dp"
+                        android:letterSpacing="0"
+                        android:text="@string/im_scan_qr"
+                        android:textAllCaps="false"
+                        android:textColor="@color/im_blue"
+                        android:textSize="15sp"
+                        app:cornerRadius="@dimen/im_btn_r"
+                        app:icon="@drawable/ic_qr_scan"
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/im_blue"
+                        app:strokeColor="@color/im_blue" />
 
                     <!-- im12 · 코드 직접 넣기는 접어 둔다 — QR 이 안 될 때만 눌러서 편다(박 대표 「최대한 단순화」) -->
                     <com.google.android.material.button.MaterialButton
