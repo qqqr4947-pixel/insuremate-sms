@@ -2,6 +2,9 @@ package me.capcom.smsgateway.modules.update
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider
 import me.capcom.smsgateway.BuildConfig
@@ -27,6 +30,7 @@ object AppUpdate {
     private val INFO_URL = BuildConfig.IM_SITE_BASE + "/sms-app.json"
     private const val PREFS = "im_app_update"
     private const val CHECK_EVERY_MS = 6L * 60 * 60 * 1000
+    private const val MAX_APK_BYTES = 100L * 1024 * 1024
 
     data class Info(val versionName: String, val versionCode: Int, val sha256: String)
 
@@ -78,9 +82,12 @@ object AppUpdate {
             conn.inputStream.use { inp ->
                 file.outputStream().use { out ->
                     val buf = ByteArray(64 * 1024)
+                    var total = 0L
                     while (true) {
                         val n = inp.read(buf)
                         if (n < 0) break
+                        total += n
+                        if (total > MAX_APK_BYTES) throw IllegalStateException("too big")
                         md.update(buf, 0, n)
                         out.write(buf, 0, n)
                     }
@@ -93,10 +100,9 @@ object AppUpdate {
                 file.delete()
                 return null
             }
-            @Suppress("DEPRECATION")
-            val pkg = context.packageManager.getPackageArchiveInfo(file.path, 0)?.packageName
-            if (pkg != context.packageName) {
-                Log.w(TAG, "다른 앱 파일 — 설치 안 함")
+            // 지문은 판 정보와 같은 곳에서 오므로 그곳이 뚫리면 소용없다 → 진짜 방어 = 서명 열쇠·판 번호를 받은 파일에서 직접 대조(리뷰 10-18)
+            if (!sameApp(context, file, info)) {
+                Log.w(TAG, "다른 앱·다른 서명·다른 판 번호 — 설치 안 함")
                 file.delete()
                 return null
             }
@@ -112,14 +118,49 @@ object AppUpdate {
         }
     }
 
+    /** 받은 파일 = 우리 앱 · 지금 깔린 것과 같은 서명 · 판 정보의 번호 */
+    private fun sameApp(context: Context, file: File, info: Info): Boolean {
+        val pm = context.packageManager
+        @Suppress("DEPRECATION")
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) PackageManager.GET_SIGNING_CERTIFICATES else PackageManager.GET_SIGNATURES
+        @Suppress("DEPRECATION")
+        val got = pm.getPackageArchiveInfo(file.path, flags) ?: return false
+        if (got.packageName != context.packageName) return false
+        @Suppress("DEPRECATION")
+        val code = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) got.longVersionCode else got.versionCode.toLong()
+        if (code != info.versionCode.toLong()) return false
+        @Suppress("DEPRECATION")
+        val mine = pm.getPackageInfo(context.packageName, flags)
+        return sigs(got) == sigs(mine) && sigs(mine).isNotEmpty()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun sigs(p: PackageInfo): Set<String> {
+        val arr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) p.signingInfo?.apkContentsSigners else p.signatures
+        return (arr ?: emptyArray()).map { s ->
+            MessageDigest.getInstance("SHA-256").digest(s.toByteArray()).joinToString("") { "%02x".format(it) }
+        }.toSet()
+    }
+
+    /** 새 판이 아니면(이미 깔림) 받아 둔 파일을 치운다 */
+    fun cleanup(context: Context) {
+        File(context.filesDir, "updates").listFiles()?.forEach { it.delete() }
+    }
+
     private fun fetchText(u: String): String? = try {
         val conn = URL(u).openConnection() as HttpURLConnection
         conn.connectTimeout = 5_000
         conn.readTimeout = 5_000
         conn.setRequestProperty("Cache-Control", "no-cache")
-        val text = if (conn.responseCode == 200) conn.inputStream.bufferedReader().use { it.readText() } else null
+        // 4KB 넘게는 읽지 않는다(판 정보는 몇 줄뿐)
+        val text = if (conn.responseCode == 200) conn.inputStream.bufferedReader().use { r ->
+            val buf = CharArray(4097)
+            var n = 0
+            while (n < buf.size) { val k = r.read(buf, n, buf.size - n); if (k < 0) break; n += k }
+            if (n > 4096) null else String(buf, 0, n)
+        } else null
         conn.disconnect()
-        text?.takeIf { it.length < 4096 }
+        text
     } catch (e: Throwable) {
         null
     }

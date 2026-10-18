@@ -581,6 +581,7 @@ class HomeFragment : Fragment() {
         val app = requireContext().applicationContext
         thread(name = "im-update-check") {
             val info = AppUpdate.check(app)
+            if (info == null && pendingInstall == null) AppUpdate.cleanup(app)   // 이미 새 판 = 받아 둔 파일 치우기
             activity?.runOnUiThread {
                 val b = _binding ?: return@runOnUiThread
                 updateInfo = info
@@ -594,8 +595,7 @@ class HomeFragment : Fragment() {
         val info = updateInfo ?: return
         if (updateBusy) return
         val ctx = requireContext()
-        // 설치 허락은 미리 묻지 않는다 — 삼성은 «출처를 알 수 없는 앱» 전체 목록을 열어 우리 앱을 찾아야 했다(10-18 공기계).
-        // 받은 뒤 바로 설치 화면을 열면 안드로이드가 스스로 [설정] 창을 띄우고, 그 창은 우리 앱 스위치 하나만 보여 준다.
+        // 먼저 받고 지문·서명을 본 뒤에 설치 허락을 묻는다 — 허락이 없으면 안내 한 줄 + 돌아오면 저절로 설치 화면(아래)
         updateBusy = true
         binding.buttonUpdate.isEnabled = false
         binding.buttonUpdate.text = getString(R.string.im_update_busy)
@@ -604,7 +604,8 @@ class HomeFragment : Fragment() {
             val intent = AppUpdate.download(app, info)
             activity?.runOnUiThread {
                 updateBusy = false
-                val b = _binding ?: return@runOnUiThread
+                // 받는 사이 홈을 떠났으면 버리지 않고 두었다가 돌아올 때(onResume) 연다
+                val b = _binding ?: run { if (intent != null) pendingInstall = intent; return@runOnUiThread }
                 b.buttonUpdate.isEnabled = true
                 b.buttonUpdate.text = getString(R.string.im_update_button)
                 if (intent == null) {
