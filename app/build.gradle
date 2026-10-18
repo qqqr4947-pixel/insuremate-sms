@@ -22,6 +22,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // im11 · 전화 요청 — 우리 서버 함수 주소. 시험 빌드만 -PimApiBase=http://127.0.0.1:5001/black-c8696/asia-northeast3 (USB adb reverse)
         buildConfigField "String", "IM_API_BASE", "\"${project.findProperty('imApiBase') ?: 'https://asia-northeast3-black-c8696.cloudfunctions.net'}\""
+        // im13 · 앱 안 업데이트 — 판 정보·받는 주소. 시험 빌드만 -PimSiteBase=http://127.0.0.1:5013 (연습 서버)
+        buildConfigField "String", "IM_SITE_BASE", "\"${project.findProperty('imSiteBase') ?: 'https://insuremate.co.kr'}\""
     }
     buildFeatures {
         viewBinding true

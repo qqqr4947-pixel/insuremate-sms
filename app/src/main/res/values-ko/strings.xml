@@ -255,4 +255,12 @@
     <string name="im_caller_card_title">전화 오면 고객 카드</string>
     <string name="im_caller_card_sub">고객이 전화하면 누군지 바로 떠요</string>
     <string name="im_caller_card_step">켜기 %1$d / 3 · 한 번 더 눌러 주세요</string>
+    <string name="im_update_title">새 판이 있어요</string>
+    <string name="im_update_sub">%1$s · 누르면 받아서 설치 화면이 떠요</string>
+    <string name="im_update_button">업데이트</string>
+    <string name="im_update_busy">받는 중</string>
+    <string name="im_update_failed">못 받았어요. 와이파이를 켜고 다시 눌러 주세요</string>
+    <string name="im_update_allow_title">처음 한 번만 켜 주세요</string>
+    <string name="im_update_allow_body">다음 화면 목록에서 InsureMateSMS 스위치를 켜고, 뒤로 돌아오면 설치 화면이 떠요</string>
+    <string name="im_update_allow_ok">켜러 가기</string>
 </resources>

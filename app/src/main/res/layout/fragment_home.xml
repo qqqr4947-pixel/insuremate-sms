@@ -78,6 +78,80 @@
             android:paddingEnd="@dimen/im_page"
             android:paddingBottom="@dimen/im_content_bottom">
 
+            <!-- ══════ im13 · 앱 안 업데이트 (박 대표 2026-10-18) — 새 판이 있을 때만 맨 위에 뜬다 ══════ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/im_gap"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/im_surface"
+                app:cardCornerRadius="@dimen/im_radius"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/im_row_min"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/im_card_pad">
+
+                    <ImageView
+                        android:layout_width="@dimen/im_icon_chip"
+                        android:layout_height="@dimen/im_icon_chip"
+                        android:background="@drawable/bg_im_icon"
+                        android:backgroundTint="@color/im_blue_tint"
+                        android:contentDescription="@string/im_update_title"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_im_logo" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/im_update_title"
+                            android:textColor="@color/im_ink"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textUpdateSub"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/im_sub"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonUpdate"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/im_btn_sm_h"
+                        android:layout_marginStart="8dp"
+                        android:backgroundTint="@color/im_blue_tint"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="@string/im_update_button"
+                        android:textAllCaps="false"
+                        android:textColor="@color/im_on_tint"
+                        app:cornerRadius="@dimen/im_btn_sm_r" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- ══════ im12 · 준비 단계 머리줄 «1 / 3 · 지금 할 일» — 준비가 끝나면 숨는다(HomeFragment.renderCards) ══════ -->
             <TextView
                 android:id="@+id/textStep"

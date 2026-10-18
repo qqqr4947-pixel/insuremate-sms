@@ -17,6 +17,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import me.capcom.smsgateway.modules.calls.CallerCardPass
+import me.capcom.smsgateway.modules.update.AppUpdate
+import kotlin.concurrent.thread
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -171,6 +173,7 @@ class HomeFragment : Fragment() {
         binding.buttonBattery.setOnClickListener { requestIgnoreBatteryOptimizations() }
         binding.buttonOverlay.setOnClickListener { requestOverlay() }
         binding.buttonCallerCard.setOnClickListener { continueCallerCard() }
+        binding.buttonUpdate.setOnClickListener { actionUpdate() }
 
         binding.buttonConnect.setOnClickListener { actionConnect() }
 
@@ -268,6 +271,14 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // 설치 허용을 켜고 돌아왔으면 받아 둔 새 판을 바로 설치 화면으로
+        pendingInstall?.let {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || requireContext().packageManager.canRequestPackageInstalls()) {
+                pendingInstall = null
+                startActivity(it)
+            }
+        }
+        checkUpdate()
 
         muteSwitches = true
         binding.switchUseRemoteServer.isChecked = gatewaySettings.enabled
@@ -557,6 +568,62 @@ class HomeFragment : Fragment() {
             else -> {
                 CallerCardPass.refresh(requireContext())
                 renderCards()
+            }
+        }
+    }
+
+    // im13 · 앱 안 업데이트 — 새 판이면 맨 위 카드 · [업데이트] → (처음 한 번 설치 허용) → 받기·지문 대조 → 설치 화면
+    private var updateInfo: AppUpdate.Info? = null
+    private var updateBusy = false
+    private var pendingInstall: Intent? = null
+
+    private fun checkUpdate() {
+        val app = requireContext().applicationContext
+        thread(name = "im-update-check") {
+            val info = AppUpdate.check(app)
+            activity?.runOnUiThread {
+                val b = _binding ?: return@runOnUiThread
+                updateInfo = info
+                b.cardUpdate.isVisible = info != null
+                if (info != null) b.textUpdateSub.text = getString(R.string.im_update_sub, "v" + info.versionName)
+            }
+        }
+    }
+
+    private fun actionUpdate() {
+        val info = updateInfo ?: return
+        if (updateBusy) return
+        val ctx = requireContext()
+        // 설치 허락은 미리 묻지 않는다 — 삼성은 «출처를 알 수 없는 앱» 전체 목록을 열어 우리 앱을 찾아야 했다(10-18 공기계).
+        // 받은 뒤 바로 설치 화면을 열면 안드로이드가 스스로 [설정] 창을 띄우고, 그 창은 우리 앱 스위치 하나만 보여 준다.
+        updateBusy = true
+        binding.buttonUpdate.isEnabled = false
+        binding.buttonUpdate.text = getString(R.string.im_update_busy)
+        val app = ctx.applicationContext
+        thread(name = "im-update-get") {
+            val intent = AppUpdate.download(app, info)
+            activity?.runOnUiThread {
+                updateBusy = false
+                val b = _binding ?: return@runOnUiThread
+                b.buttonUpdate.isEnabled = true
+                b.buttonUpdate.text = getString(R.string.im_update_button)
+                if (intent == null) {
+                    Toast.makeText(app, getString(R.string.im_update_failed), Toast.LENGTH_LONG).show()
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !app.packageManager.canRequestPackageInstalls()) {
+                    // 처음 한 번 — 삼성은 앱 목록 전체를 연다(10-18 공기계). 무엇을 켤지 먼저 한 줄로 알려 주고,
+                    // 켜고 돌아오면(onResume) 다시 누르지 않아도 설치 화면을 연다
+                    pendingInstall = intent
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.im_update_allow_title)
+                        .setMessage(R.string.im_update_allow_body)
+                        .setPositiveButton(R.string.im_update_allow_ok) { _, _ ->
+                            startActivity(android.content.Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${app.packageName}")))
+                        }
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show()
+                } else {
+                    startActivity(intent)
+                }
             }
         }
     }

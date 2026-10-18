@@ -282,4 +282,12 @@
     <string name="im_caller_card_title">Customer card on calls</string>
     <string name="im_caller_card_sub">Shows who is calling right away</string>
     <string name="im_caller_card_step">Step %1$d of 3 · tap again</string>
+    <string name="im_update_title">New version available</string>
+    <string name="im_update_sub">%1$s · tap to download and install</string>
+    <string name="im_update_button">Update</string>
+    <string name="im_update_busy">Downloading</string>
+    <string name="im_update_failed">Download failed. Turn on WiFi and tap again</string>
+    <string name="im_update_allow_title">Allow once</string>
+    <string name="im_update_allow_body">Turn on InsureMateSMS in the next list, then come back to install</string>
+    <string name="im_update_allow_ok">Open settings</string>
 </resources>
