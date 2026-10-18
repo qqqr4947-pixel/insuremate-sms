@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 카드 바탕 — 키트 tui-card 와 같은 흰 면 + 20 라운딩 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/im_surface" />
+    <corners android:radius="@dimen/im_radius" />
+</shape>

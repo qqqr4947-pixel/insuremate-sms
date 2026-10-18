@@ -6,6 +6,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import me.capcom.smsgateway.modules.calls.CallRequestHandler
+import me.capcom.smsgateway.modules.calls.CallerCardPass
 import me.capcom.smsgateway.modules.events.ExternalEvent
 import me.capcom.smsgateway.modules.events.ExternalEventType
 import me.capcom.smsgateway.modules.gateway.GatewaySettings
@@ -106,6 +107,8 @@ class PushService : FirebaseMessagingService(), KoinComponent {
                 RegistrationWorker.start(context, token, false)
                 // im11 · 앱이 켜질 때마다 알림 주소를 우리 서버에도 알린다(업데이트만 한 앱도 첫 보고가 된다)
                 CallRequestHandler.reportPushToken(token)
+                // im13 · 고객 카드용 통행증(벨 울릴 때 빠르게 묻기) — 없거나 곧 끝나면 받는다
+                CallerCardPass.refresh(context)
             }
         }
     }

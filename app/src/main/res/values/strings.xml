@@ -272,4 +272,14 @@
     <string name="im_restricted_toast">Tap ⋮ at top right → «Allow restricted settings», then come back and tap «Turn on» again</string>
     <string name="im_advanced_show">Advanced settings</string>
     <string name="im_advanced_hide">Hide advanced settings</string>
+    <!-- im13 caller card (test build) -->
+    <string name="caller_card_head">InsureMate customer</string>
+    <string name="caller_card_head_many">InsureMate customers: %1$d</string>
+    <string name="caller_card_locked_name">InsureMate customer</string>
+    <string name="caller_card_locked_sub">Unlock to see details</string>
+    <string name="caller_card_open">Open in InsureMate</string>
+    <string name="caller_card_close">Close</string>
+    <string name="im_caller_card_title">Customer card on calls</string>
+    <string name="im_caller_card_sub">Shows who is calling right away</string>
+    <string name="im_caller_card_step">Step %1$d of 3 · tap again</string>
 </resources>

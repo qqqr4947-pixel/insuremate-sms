@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 전화 오면 고객 카드 · 보여 주기만(메모 입력 없음) · 시안 mockup/_sian-caller-card.html -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/im_page"
+    android:layout_marginEnd="@dimen/im_page"
+    android:background="@drawable/bg_im_card"
+    android:elevation="8dp"
+    android:orientation="vertical"
+    android:padding="@dimen/im_card_pad">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_im_logo" />
+
+        <TextView
+            android:id="@+id/cardHead"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:textColor="@color/im_sub"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/cardClose"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/caller_card_close"
+            android:gravity="center"
+            android:text="✕"
+            android:textColor="@color/im_sub"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/cardName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/im_ink"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/cardChips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/im_body"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/cardAlerts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/cardRows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <TextView
+        android:id="@+id/cardOpen"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/im_btn_sm_h"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_im_tint_btn"
+        android:gravity="center"
+        android:text="@string/caller_card_open"
+        android:textColor="@color/im_on_tint"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+</LinearLayout>

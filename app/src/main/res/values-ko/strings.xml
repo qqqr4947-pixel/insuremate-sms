@@ -245,4 +245,14 @@
     <string name="im_restricted_toast">오른쪽 위 ⋮ → «제한된 설정 허용»을 누르고 돌아와 «권한 켜기»를 한 번 더 눌러 주세요</string>
     <string name="im_advanced_show">고급 설정</string>
     <string name="im_advanced_hide">고급 설정 닫기</string>
+    <!-- im13 · 전화 오면 고객 카드(시험판) -->
+    <string name="caller_card_head">인슈어메이트 고객</string>
+    <string name="caller_card_head_many">인슈어메이트 고객 %1$d명</string>
+    <string name="caller_card_locked_name">인슈어메이트 고객</string>
+    <string name="caller_card_locked_sub">잠금을 풀면 자세히 보여요</string>
+    <string name="caller_card_open">인슈어메이트에서 열기</string>
+    <string name="caller_card_close">닫기</string>
+    <string name="im_caller_card_title">전화 오면 고객 카드</string>
+    <string name="im_caller_card_sub">고객이 전화하면 누군지 바로 떠요</string>
+    <string name="im_caller_card_step">켜기 %1$d / 3 · 한 번 더 눌러 주세요</string>
 </resources>

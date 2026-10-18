@@ -82,17 +82,22 @@ object CallRequestHandler : KoinComponent {
         }
     }
 
-    private fun post(body: JSONObject): JSONObject? {
-        val info = settings.registrationInfo ?: return null
+    /** 고객 카드(CallerCardService)도 같은 길로 묻는다 */
+    internal fun post(body: JSONObject, timeoutMs: Int = TIMEOUT_MS): JSONObject? {
+        val info = settings.registrationInfo
+        // 시험판(연습 서버 127.0.0.1)만 연결 열쇠 없이 묻는다 — 실제 서버는 열쇠가 없으면 묻지 않는다
+        if (info == null && !BuildConfig.IM_API_BASE.startsWith("http://127.0.0.1")) return null
         return try {
             val conn = URL(BuildConfig.IM_API_BASE + "/smsAppApi").openConnection() as HttpURLConnection
-            conn.connectTimeout = TIMEOUT_MS
-            conn.readTimeout = TIMEOUT_MS
+            conn.connectTimeout = timeoutMs
+            conn.readTimeout = timeoutMs
             conn.requestMethod = "POST"
             conn.doOutput = true
             conn.setRequestProperty("Content-Type", "application/json")
-            conn.setRequestProperty("Authorization", "Bearer " + info.token)
-            body.put("deviceId", info.id)
+            if (info != null) {
+                conn.setRequestProperty("Authorization", "Bearer " + info.token)
+                body.put("deviceId", info.id)
+            }
             conn.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode
             val text = (if (code < 400) conn.inputStream else conn.errorStream)

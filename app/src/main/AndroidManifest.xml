@@ -27,6 +27,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- im11 · PC 「전화 걸기」 → 전화 화면을 곧바로 연다(화면 뒤에서 여는 예외 = 다른 앱 위에 표시) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- im13 · 전화 오면 고객 카드 — 연락처에 저장한 고객도 «전화 걸러내기»가 넘겨받게(안드 공식 조건) -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:name=".App"
@@ -47,6 +49,16 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- im13 · 전화 오면 고객 카드 · 안드 10+ 전화 걸러내기 앱 역할 -->
+        <service
+            android:name=".modules.calls.CallerCardService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
 
         <service
             android:name=".services.PushService"

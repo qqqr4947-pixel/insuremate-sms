@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import me.capcom.smsgateway.modules.calls.CallerCardPass
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -169,6 +170,7 @@ class HomeFragment : Fragment() {
 
         binding.buttonBattery.setOnClickListener { requestIgnoreBatteryOptimizations() }
         binding.buttonOverlay.setOnClickListener { requestOverlay() }
+        binding.buttonCallerCard.setOnClickListener { continueCallerCard() }
 
         binding.buttonConnect.setOnClickListener { actionConnect() }
 
@@ -316,8 +318,15 @@ class HomeFragment : Fragment() {
         binding.cardBattery.isVisible = step == 2
         binding.cardConnect.isVisible = step == 3
         binding.cardStatus.isVisible = ready
-        // im11 · PC 「전화 걸기」 — 연결된 사람만 · «다른 앱 위에 표시»가 꺼져 있을 때만
-        binding.cardOverlay.isVisible = ready && registered && !canDrawOverlays()
+        // im13 · 전화 오면 고객 카드 — 세 허락 중 빠진 게 있으면 [켜기] 하나로 차례로 연다(안드 10+ · 연결된 사람만)
+        val callerStep = callerCardStep()
+        binding.cardCallerCard.isVisible = ready && registered && callerStep != 0
+        if (callerStep != 0) {
+            binding.textCallerCardSub.text = if (callerStep == 1) getString(R.string.im_caller_card_sub)
+            else getString(R.string.im_caller_card_step, callerStep)
+        }
+        // im11 · PC 「전화 걸기」 — 연결된 사람만 · «다른 앱 위에 표시»가 꺼져 있을 때만(고객 카드 카드가 같은 허락을 열고 있으면 숨는다)
+        binding.cardOverlay.isVisible = ready && registered && !canDrawOverlays() && !binding.cardCallerCard.isVisible
         binding.cardLocalServer.isVisible = ready && usesLocal
         binding.cardRecent.isVisible = false
         binding.cardAdvanced.isVisible = showAdvanced
@@ -511,6 +520,45 @@ class HomeFragment : Fragment() {
             .setBeepEnabled(false)
             .setOrientationLocked(false)
         scanLauncher.launch(options)
+    }
+
+    // im13 · 고객 카드 허락 — 하나 받고 돌아오면 다음 것을 곧바로 연다(사용자는 [켜기] 한 번 + 시스템 창 «허용»만)
+    private val callerRoleRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (callerCardStep() == 2) continueCallerCard() else renderCards()
+    }
+    private val contactsPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) continueCallerCard() else renderCards()
+    }
+
+    /** 0 = 다 켜짐(또는 안드 10 미만이라 해당 없음) · 1 = 전화 걸러내기 앱 · 2 = 연락처 · 3 = 다른 앱 위에 표시 */
+    private fun callerCardStep(): Int {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return 0
+        val ctx = requireContext()
+        val role = ctx.getSystemService(android.app.role.RoleManager::class.java)
+        return when {
+            role != null && role.isRoleAvailable(android.app.role.RoleManager.ROLE_CALL_SCREENING) &&
+                !role.isRoleHeld(android.app.role.RoleManager.ROLE_CALL_SCREENING) -> 1
+            // 연락처 허락이 없으면 안드로이드가 «연락처에 저장된 번호»의 전화를 우리에게 넘기지 않는다
+            ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED -> 2
+            !canDrawOverlays() -> 3
+            else -> 0
+        }
+    }
+
+    private fun continueCallerCard() {
+        if (_binding == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        when (callerCardStep()) {
+            1 -> {
+                val role = requireContext().getSystemService(android.app.role.RoleManager::class.java)
+                callerRoleRequest.launch(role.createRequestRoleIntent(android.app.role.RoleManager.ROLE_CALL_SCREENING))
+            }
+            2 -> contactsPermissionRequest.launch(Manifest.permission.READ_CONTACTS)
+            3 -> requestOverlay()
+            else -> {
+                CallerCardPass.refresh(requireContext())
+                renderCards()
+            }
+        }
     }
 
     private val cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
