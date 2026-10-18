@@ -263,4 +263,5 @@
     <string name="im_update_allow_title">처음 한 번만 켜 주세요</string>
     <string name="im_update_allow_body">다음 화면 목록에서 InsureMateSMS 스위치를 켜고, 뒤로 돌아오면 설치 화면이 떠요</string>
     <string name="im_update_allow_ok">켜러 가기</string>
+    <string name="im_update_whatsnew_title">이번에 바뀐 것</string>
 </resources>

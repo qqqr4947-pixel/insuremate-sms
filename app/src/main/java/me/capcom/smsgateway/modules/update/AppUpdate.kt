@@ -32,7 +32,15 @@ object AppUpdate {
     private const val CHECK_EVERY_MS = 6L * 60 * 60 * 1000
     private const val MAX_APK_BYTES = 100L * 1024 * 1024
 
-    data class Info(val versionName: String, val versionCode: Int, val sha256: String)
+    data class Info(val versionName: String, val versionCode: Int, val sha256: String, val notes: List<String> = emptyList())
+
+    /** 판 정보의 «이번에 바뀐 것»(notes) — 4줄 · 줄마다 60자까지만 (박 대표 10-18 흐름표 2번) */
+    private fun parse(raw: String?): Info? {
+        val j = try { JSONObject(raw ?: return null) } catch (e: Throwable) { return null }
+        val arr = j.optJSONArray("notes")
+        val notes = (0 until (arr?.length() ?: 0)).mapNotNull { arr?.optString(it)?.trim()?.take(60)?.takeIf { s -> s.isNotEmpty() } }.take(4)
+        return Info(j.optString("versionName"), j.optInt("versionCode"), j.optString("sha256").lowercase(), notes)
+    }
 
     /** 새 판이 있으면 Info · 없거나 못 물으면 null. 작업 스레드에서 부른다 */
     fun check(context: Context, force: Boolean = false): Info? {
@@ -43,8 +51,7 @@ object AppUpdate {
             if (got != null) p.edit().putString("json", got).putLong("at", now).apply()
             got ?: p.getString("json", null)
         }
-        val j = try { JSONObject(raw ?: return null) } catch (e: Throwable) { return null }
-        val info = Info(j.optString("versionName"), j.optInt("versionCode"), j.optString("sha256").lowercase())
+        val info = parse(raw) ?: return null
         if (info.versionName.isBlank() || !Regex("^[0-9a-f]{64}$").matches(info.sha256)) return null
         // 같은 날 두 번 내면 versionCode 가 같다(빌드 날짜로 센다) → 이름이 다르고 번호가 작지 않으면 새 판
         val newer = info.versionCode > BuildConfig.VERSION_CODE ||
@@ -140,6 +147,17 @@ object AppUpdate {
         return (arr ?: emptyArray()).map { s ->
             MessageDigest.getInstance("SHA-256").digest(s.toByteArray()).joinToString("") { "%02x".format(it) }
         }.toSet()
+    }
+
+    /** 새 판을 깔고 처음 켰을 때 한 번 — 받기 전에 저장해 둔 판 정보가 지금 판과 같으면 그 «바뀐 것» 줄.
+     *  인터넷을 다시 묻지 않는다(업데이트해도 이 앱의 저장값은 남는다). 처음 설치한 폰은 저장값이 없어 안 뜬다 */
+    fun takeWhatsNew(context: Context): List<String> {
+        val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        if (p.getString("notesShown", null) == BuildConfig.VERSION_NAME) return emptyList()
+        val info = parse(p.getString("json", null)) ?: return emptyList()
+        if (info.versionName != BuildConfig.VERSION_NAME || info.notes.isEmpty()) return emptyList()
+        p.edit().putString("notesShown", BuildConfig.VERSION_NAME).apply()
+        return info.notes
     }
 
     /** 새 판이 아니면(이미 깔림) 받아 둔 파일을 치운다 */

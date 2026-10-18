@@ -580,13 +580,22 @@ class HomeFragment : Fragment() {
     private fun checkUpdate() {
         val app = requireContext().applicationContext
         thread(name = "im-update-check") {
+            val whatsNew = AppUpdate.takeWhatsNew(app)   // 판 정보를 새로 받기 전에 — 받은 판의 «바뀐 것»
             val info = AppUpdate.check(app)
             if (info == null && pendingInstall == null) AppUpdate.cleanup(app)   // 이미 새 판 = 받아 둔 파일 치우기
             activity?.runOnUiThread {
                 val b = _binding ?: return@runOnUiThread
                 updateInfo = info
                 b.cardUpdate.isVisible = info != null
-                if (info != null) b.textUpdateSub.text = getString(R.string.im_update_sub, "v" + info.versionName)
+                if (info != null) b.textUpdateSub.text = (listOf(getString(R.string.im_update_sub, "v" + info.versionName)) +
+                    info.notes.map { "· $it" }).joinToString("\n")
+                if (whatsNew.isNotEmpty()) {
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.im_update_whatsnew_title)
+                        .setMessage(whatsNew.joinToString("\n") { "· $it" })
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
             }
         }
     }

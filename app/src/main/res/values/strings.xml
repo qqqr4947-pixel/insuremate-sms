@@ -290,4 +290,5 @@
     <string name="im_update_allow_title">Allow once</string>
     <string name="im_update_allow_body">Turn on InsureMateSMS in the next list, then come back to install</string>
     <string name="im_update_allow_ok">Open settings</string>
+    <string name="im_update_whatsnew_title">What\'s new</string>
 </resources>
