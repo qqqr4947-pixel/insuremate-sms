@@ -159,10 +159,23 @@ class GatewayService(
                 )
             )
         } catch (th: Throwable) {
+            // im13 · 연결 코드가 틀렸다·만료·이미 씀(401) 또는 시도 너무 많음(429)이면 같은 코드로 다시 해도 영영 안 된다.
+            // 전엔 저절로 다시 하기가 죽은 코드로 계속 두드려 5번 제한을 다 쓰고 새 코드까지 막았다(10-19 공기계 실측).
+            // → 연결을 끄고 코드를 지운다. 다시 하기는 enabled=false 라 바로 끝나고, 홈은 연결 단계로 돌아간다.
+            val status = (th as? ClientRequestException)?.response?.status
+            if (registerMode == RegistrationMode.Anonymous &&
+                (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.TooManyRequests)
+            ) {
+                this.settings.privateToken = null
+                this.settings.enabled = false
+            }
+            // 서버 안내 글({"message":"…"})만 보여 준다 — 전엔 요청 주소·영어가 섞인 통째 글이 떴다
+            val raw = th.localizedMessage ?: th.message ?: th.toString()
+            val reason = Regex("\"message\"\\s*:\\s*\"([^\"]+)\"").find(raw)?.groupValues?.get(1) ?: raw
             events.emit(
                 DeviceRegisteredEvent.Failure(
                     api.hostname,
-                    th.localizedMessage ?: th.message ?: th.toString()
+                    reason
                 )
             )
 
