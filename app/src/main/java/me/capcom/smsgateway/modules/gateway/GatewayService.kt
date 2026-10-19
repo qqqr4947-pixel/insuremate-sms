@@ -35,11 +35,15 @@ class GatewayService(
 
     private var _api: GatewayApi? = null
 
+    private var _apiToken: String? = null
+
+    // im13 · 연결 코드(privateToken)가 바뀌면 통로를 새로 만든다 — 전엔 처음 만든 통로가 옛 코드를 계속 실어
+    // 새 코드로 연결해도 대리가 «그런 코드 없음»(no_such_code)으로 거절했다(10-19 공기계 · 코드는 창고에 멀쩡히 있었다)
     private val api
-        get() = _api ?: GatewayApi(
+        get() = _api?.takeIf { _apiToken == settings.privateToken } ?: GatewayApi(
             settings.serverUrl,
             settings.privateToken
-        ).also { _api = it }
+        ).also { _api = it; _apiToken = settings.privateToken }
 
     //region Start, stop, etc...
     fun start(context: Context) {
