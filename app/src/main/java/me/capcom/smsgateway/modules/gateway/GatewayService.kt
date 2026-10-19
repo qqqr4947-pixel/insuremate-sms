@@ -159,13 +159,12 @@ class GatewayService(
                 )
             )
         } catch (th: Throwable) {
-            // im13 · 연결 코드가 틀렸다·만료·이미 씀(401) 또는 시도 너무 많음(429)이면 같은 코드로 다시 해도 영영 안 된다.
+            // im13 · 연결 코드가 틀렸다·만료·이미 씀(401)이면 같은 코드로 다시 해도 영영 안 된다.
             // 전엔 저절로 다시 하기가 죽은 코드로 계속 두드려 5번 제한을 다 쓰고 새 코드까지 막았다(10-19 공기계 실측).
             // → 연결을 끄고 코드를 지운다. 다시 하기는 enabled=false 라 바로 끝나고, 홈은 연결 단계로 돌아간다.
+            // 시도 너무 많음(429)은 같은 와이파이의 다른 폰 탓일 수도 있어 손대지 않는다 — 간격을 늘려 다시 하다 코드가 만료되면 401 로 여기서 멈춘다.
             val status = (th as? ClientRequestException)?.response?.status
-            if (registerMode == RegistrationMode.Anonymous &&
-                (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.TooManyRequests)
-            ) {
+            if (registerMode == RegistrationMode.Anonymous && status == HttpStatusCode.Unauthorized) {
                 this.settings.privateToken = null
                 this.settings.enabled = false
             }
