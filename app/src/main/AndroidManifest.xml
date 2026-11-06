@@ -117,6 +117,20 @@
             </intent-filter>
         </activity>
 
+        <!-- 고객 연락처 저장 · 우리 화면 [연락처에 저장] 이 부르는 입구 (insuremate-sms://contacts) -->
+        <activity
+            android:name=".modules.contacts.ContactsImportActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="insuremate-sms" android:host="contacts" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

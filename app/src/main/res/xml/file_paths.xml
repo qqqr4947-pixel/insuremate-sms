@@ -3,4 +3,5 @@
     <files-path name="mms_out" path="mms-out/" />
     <files-path name="mms_in" path="mms-in/" />
     <files-path name="updates" path="updates/" />
+    <cache-path name="contacts" path="contacts/" />
 </paths>
