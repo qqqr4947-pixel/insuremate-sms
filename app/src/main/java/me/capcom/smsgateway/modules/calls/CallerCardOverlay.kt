@@ -82,7 +82,8 @@ object CallerCardOverlay {
                 run()
             }
         }
-        ContextCompat.registerReceiver(app, rx, IntentFilter(Intent.ACTION_USER_PRESENT), ContextCompat.RECEIVER_NOT_EXPORTED)
+        // EXPORTED 여야 받는다 — 잠금 풀림은 시스템 UI(코어 아님)가 보내 NOT_EXPORTED 는 걸러진다(11-09 실측 · 받는 명단에 없음) · 보호 신호라 다른 앱이 흉내 못 냄
+        ContextCompat.registerReceiver(app, rx, IntentFilter(Intent.ACTION_USER_PRESENT), ContextCompat.RECEIVER_EXPORTED)
         v.postDelayed({ try { app.unregisterReceiver(rx) } catch (_: Throwable) {} }, AUTO_CLOSE_MS)
     }
 
