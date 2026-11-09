@@ -2,7 +2,10 @@ package me.capcom.smsgateway.modules.calls
 
 import android.content.Context
 import android.util.Log
+import me.capcom.smsgateway.modules.gateway.GatewaySettings
 import org.json.JSONObject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
 /**
@@ -10,7 +13,8 @@ import kotlin.concurrent.thread
  * 받는 길 = 앱 접속 열쇠로 정식 증명(cardPass) · 7일 · 이틀 남으면 다시 받는다 · 서버가 거절하면 지우고 다시 받는다.
  * 통행증으로 할 수 있는 일은 «번호 하나 묻기»뿐이다(서버가 기기당 시간 60번으로 막는다).
  */
-object CallerCardPass {
+object CallerCardPass : KoinComponent {
+    private val settings by inject<GatewaySettings>()
     private const val TAG = "CallerCard"
     private const val PREFS = "im_caller_card"
     private const val RENEW_BEFORE_MS = 2L * 24 * 60 * 60 * 1000
@@ -32,7 +36,10 @@ object CallerCardPass {
         val now = System.currentTimeMillis()
         if (prefs(app).getString("pass", null) != null && exp - now > RENEW_BEFORE_MS) return
         // 못 받았으면 한 시간은 다시 묻지 않는다 — 연결 끊은 폰이 벨마다 6초짜리 증명을 두드리지 않게
-        if (now - prefs(app).getLong("failAt", 0) < RETRY_AFTER_FAIL_MS) return
+        // 단 쉬기는 «실패한 그 연결»에만 — 다시 연결하면(연결 번호가 바뀌면) 바로 받는다(11-09 끊긴 채 전화 → 다시 연결해도 1시간 카드 0)
+        val linkId = settings.registrationInfo?.id
+        if (linkId == prefs(app).getString("failId", null) &&
+            now - prefs(app).getLong("failAt", 0) < RETRY_AFTER_FAIL_MS) return
         if (busy) return
         busy = true
         thread(name = "im-card-pass") {
@@ -40,9 +47,9 @@ object CallerCardPass {
                 val res = CallRequestHandler.post(JSONObject().put("action", "cardPass"))
                 val pass = res?.takeIf { it.optBoolean("ok") }?.optString("pass")
                 if (!pass.isNullOrBlank()) {
-                    prefs(app).edit().putString("pass", pass).putLong("exp", res.optLong("expiresAt")).remove("failAt").apply()
+                    prefs(app).edit().putString("pass", pass).putLong("exp", res.optLong("expiresAt")).remove("failAt").remove("failId").apply()
                 } else {
-                    prefs(app).edit().putLong("failAt", System.currentTimeMillis()).apply()
+                    prefs(app).edit().putLong("failAt", System.currentTimeMillis()).putString("failId", linkId).apply()
                 }
                 Log.i(TAG, "통행증 받기: ${!pass.isNullOrBlank()}")
             } finally {
