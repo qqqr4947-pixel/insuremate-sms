@@ -1,7 +1,9 @@
 package me.capcom.smsgateway.modules.calls
 
 import android.app.KeyguardManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.net.Uri
@@ -62,9 +64,26 @@ object CallerCardOverlay {
             context.getSystemService(WindowManager::class.java).addView(v, lp)
             shown = v
             v.postDelayed({ if (shown === v) hide(context) }, AUTO_CLOSE_MS)
+            if (locked) whenUnlocked(context, v) { if (shown === v) show(context, cards) }
         } catch (e: Throwable) {
             Log.w(TAG, "카드를 못 띄웠다", e)
         }
+    }
+
+    /**
+     * 잠금 상태로 띄운 카드는 잠금을 푸는 순간 자세히로 다시 그린다 — 11-09 실측: 풀어도 «잠금을 풀면 자세히 보여요» 그대로였다.
+     * 잠금 화면 위에는 자세히를 안 띄운다(누구나 보는 화면 · 개인정보 안전조치) · 카드가 닫히면 귀도 거둔다.
+     */
+    private fun whenUnlocked(context: Context, v: View, run: () -> Unit) {
+        val app = context.applicationContext
+        val rx = object : BroadcastReceiver() {
+            override fun onReceive(c: Context, i: Intent) {
+                try { app.unregisterReceiver(this) } catch (_: Throwable) {}
+                run()
+            }
+        }
+        ContextCompat.registerReceiver(app, rx, IntentFilter(Intent.ACTION_USER_PRESENT), ContextCompat.RECEIVER_NOT_EXPORTED)
+        v.postDelayed({ try { app.unregisterReceiver(rx) } catch (_: Throwable) {} }, AUTO_CLOSE_MS)
     }
 
     fun hide(context: Context) {
