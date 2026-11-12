@@ -770,12 +770,10 @@ class HomeFragment : Fragment() {
 
     private fun requestPermissionsAndStart() {
         val permissionsRequired =
+            // 11-12 · 문자 읽기·받기는 묻지 않는다(매니페스트에서 뺐다 · 구글 «앱 차단됨» 피하기)
             listOf(
                 Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.READ_SMS,
-                Manifest.permission.RECEIVE_SMS,
                 Manifest.permission.SEND_SMS,
-                Manifest.permission.RECEIVE_MMS,
                 Manifest.permission.READ_PHONE_NUMBERS.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU },
             )
                 .filterNotNull()
