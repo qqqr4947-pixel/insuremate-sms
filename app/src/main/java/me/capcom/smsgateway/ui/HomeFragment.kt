@@ -230,11 +230,12 @@ class HomeFragment : Fragment() {
                 binding.textRemoteDeviceId.text =
                     gatewaySettings.deviceId ?: getString(R.string.n_a)
 
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.failed_to_register_device, event.reason),
-                    Toast.LENGTH_LONG
-                ).show()
+                // 11-12 · 잠깐 뜨는 알림은 두 줄에서 잘려(«…») 이유를 끝까지 못 읽었다 → 닫을 때까지 남는 창에 이유 전체
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.im_connect_failed_title)
+                    .setMessage(event.reason)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
                 renderCards()
             }
         }

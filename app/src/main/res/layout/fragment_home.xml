@@ -480,6 +480,25 @@
                         tools:text="@string/internet_connection_unavailable"
                         tools:visibility="visible" />
 
+                    <!-- 11-12 박 대표 «문자 발송할꺼면 켜둬야한다고 · 화면 잠금되면 안나오더라고 · 전화왔을때 화면 보이는거 고객 등록한사람» -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/im_gap"
+                        android:text="@string/im_keep_title"
+                        android:textColor="@color/im_ink"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="4dp"
+                        android:text="@string/im_keep_body"
+                        android:textColor="@color/im_sub"
+                        android:textSize="14sp" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
