@@ -166,15 +166,18 @@ class GatewayService(
             // im13 · 연결 코드가 틀렸다·만료·이미 씀(401)이면 같은 코드로 다시 해도 영영 안 된다.
             // 전엔 저절로 다시 하기가 죽은 코드로 계속 두드려 5번 제한을 다 쓰고 새 코드까지 막았다(10-19 공기계 실측).
             // → 연결을 끄고 코드를 지운다. 다시 하기는 enabled=false 라 바로 끝나고, 홈은 연결 단계로 돌아간다.
-            // 시도 너무 많음(429)은 같은 와이파이의 다른 폰 탓일 수도 있어 손대지 않는다 — 간격을 늘려 다시 하다 코드가 만료되면 401 로 여기서 멈춘다.
+            // 11-12 · 401 만 멈추면 «번호 다름(403)»은 저절로 4번 더 두드려 한 번 누름에 5번 실패 → 같은 와이파이가 10분 막혔다(실측 3명).
+            // 서버가 거절한 것(4xx)은 같은 요청을 다시 해도 같은 답이다 → 전부 멈추고 연결 단계로. 네트워크 끊김·서버 5xx 만 다시 한다.
             val status = (th as? ClientRequestException)?.response?.status
-            if (registerMode == RegistrationMode.Anonymous && status == HttpStatusCode.Unauthorized) {
+            if (registerMode == RegistrationMode.Anonymous && status != null && status.value in 400..499) {
                 this.settings.privateToken = null
                 this.settings.enabled = false
             }
             // 서버 안내 글({"message":"…"})만 보여 준다 — 전엔 요청 주소·영어가 섞인 통째 글이 떴다
             val raw = th.localizedMessage ?: th.message ?: th.toString()
-            val reason = Regex("\"message\"\\s*:\\s*\"([^\"]+)\"").find(raw)?.groupValues?.get(1) ?: raw
+            // 11-12 · «인터넷»은 정말 서버에 못 닿았을 때(IOException)만 말한다 — 전엔 모든 실패에 «인터넷을 확인»이 붙어 번호 다름도 인터넷 탓으로 읽혔다
+            val reason = if (th is java.io.IOException) "인터넷에 닿지 않았어요. 와이파이나 데이터를 켜고 다시 눌러 주세요"
+                else Regex("\"message\"\\s*:\\s*\"([^\"]+)\"").find(raw)?.groupValues?.get(1) ?: raw
             events.emit(
                 DeviceRegisteredEvent.Failure(
                     api.hostname,

@@ -85,7 +85,7 @@
     <string name="enter_current_password">지금 쓰는 비밀번호를 넣어요</string>
     <string name="failed_to_change_password">비밀번호를 못 바꿨어요 — 지금 비밀번호를 다시 확인해요 (%1$s)</string>
     <string name="failed_to_get_login_code">로그인 코드를 못 받았어요 — 인터넷 연결을 확인하고 다시 눌러요 (%1$s)</string>
-    <string name="failed_to_register_device">폰을 연결하지 못했어요 — 연결 코드와 인터넷을 확인하고 다시 눌러요 (%1$s)</string>
+    <string name="failed_to_register_device">폰을 연결하지 못했어요. %1$s</string>
     <string name="id_copied">웹훅 ID를 복사했어요</string>
     <string name="if_sim_number_is_not_specified_use">보낼 유심을 안 정했을 때</string>
     <string name="ignored_for_public_server">PC 「폰 연결하기」에서 받은 코드</string>
