@@ -230,8 +230,8 @@ class HomeFragment : Fragment() {
                 binding.textRemoteDeviceId.text =
                     gatewaySettings.deviceId ?: getString(R.string.n_a)
 
-                // 11-12 · 잠깐 뜨는 알림은 두 줄에서 잘려(«…») 이유를 끝까지 못 읽었다 → 닫을 때까지 남는 창에 이유 전체
-                showNotice(getString(R.string.im_connect_failed_title), event.reason)
+                // 11-12 · 잠깐 뜨는 알림은 두 줄에서 잘려(«…») 이유를 끝까지 못 읽었다 → 이유별 창 + 그 자리에서 고치는 단추
+                showFailure(event)
                 renderCards()
             }
         }
@@ -293,6 +293,11 @@ class HomeFragment : Fragment() {
         refreshCounters()
 
         consumeWebLinkCode()
+
+        if (retryOnResume && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            retryOnResume = false
+            if (!gatewaySettings.privateToken.isNullOrBlank()) { gatewaySettings.enabled = true; requestPermissionsAndStart() }
+        }
     }
 
     // ══════════ 그리기 ══════════
@@ -683,6 +688,13 @@ class HomeFragment : Fragment() {
         binding.layoutRemoteServer.isVisible = true
 
         requestPermissionsAndStart()
+
+        // 11-12 · 인터넷이 없으면 등록이 조용히 기다려서(실패가 안 생김) 사람은 «연결 전»만 보고 이유를 몰랐다(비행기 모드 실측)
+        //   → 누른 그 자리에서 알린다. 인터넷이 돌아오면 등록은 저절로 이어진다
+        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+        val online = Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+            cm.getNetworkCapabilities(cm.activeNetwork)?.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        if (!online) showFailure(DeviceRegisteredEvent.Failure("", "", "network"))
     }
 
     private fun actionStart(start: Boolean) {
@@ -803,15 +815,92 @@ class HomeFragment : Fragment() {
         ).show()
     }
 
-    /** 안내 창 — 홈 카드와 같은 모양(dialog_im_notice) · 닫을 때까지 남아 이유를 끝까지 읽는다 */
-    private fun showNotice(title: String, body: String) {
+    /** 안내 창 — 홈 카드와 같은 모양(dialog_im_notice) · 닫을 때까지 남는다 · 한 번에 하나만(저절로 다시 하기가 창을 쌓지 않게) */
+    private var noticeDialog: androidx.appcompat.app.AlertDialog? = null
+    private var retryOnResume = false   // 앱 설정에서 전화 권한을 켜고 돌아오면 같은 코드로 다시 연결
+    private var noticeWhy: String? = null
+
+    private fun showNotice(
+        why: String?, title: String, body: String,
+        primary: String, onPrimary: () -> Unit,
+        second: String = getString(R.string.im_notice_close), onSecond: (() -> Unit)? = null,
+        danger: Boolean = false, nums: Pair<String, String>? = null,
+    ) {
+        if (noticeDialog?.isShowing == true) {
+            if (noticeWhy == why) return
+            noticeDialog?.dismiss()
+        }
         val view = layoutInflater.inflate(R.layout.dialog_im_notice, null)
         view.findViewById<android.widget.TextView>(R.id.textNoticeTitle).text = title
         view.findViewById<android.widget.TextView>(R.id.textNoticeBody).text = body
+        view.findViewById<android.widget.ImageView>(R.id.iconNotice).apply {
+            backgroundTintList = ContextCompat.getColorStateList(requireContext(), if (danger) R.color.im_danger_bg else R.color.im_warn_bg)
+            imageTintList = ContextCompat.getColorStateList(requireContext(), if (danger) R.color.im_danger_fg else R.color.im_warn_fg)
+        }
+        nums?.let { (phone, account) ->
+            view.findViewById<View>(R.id.layoutNoticeNums).isVisible = true
+            view.findViewById<android.widget.TextView>(R.id.textNoticePhone).text = getString(R.string.im_fail_phone_label, phone)
+            view.findViewById<android.widget.TextView>(R.id.textNoticeAccount).text = getString(R.string.im_fail_account_label, account)
+        }
         val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext()).setView(view).create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)   // 창 기본 네모 바탕을 빼야 카드의 둥근 모서리가 보인다
-        view.findViewById<View>(R.id.buttonNoticeOk).setOnClickListener { dialog.dismiss() }
+        view.findViewById<android.widget.Button>(R.id.buttonNoticeOk).apply {
+            text = primary
+            setOnClickListener { dialog.dismiss(); onPrimary() }
+        }
+        view.findViewById<android.widget.Button>(R.id.buttonNoticeSecond).apply {
+            text = second
+            setOnClickListener { dialog.dismiss(); onSecond?.invoke() }
+        }
+        noticeDialog = dialog; noticeWhy = why
         dialog.show()
+    }
+
+    /** 실패 이유별 창 8가지(시안 claude.ai/artifact/NGxk7aEznY5GGmoMfH5H78 · 박 대표 11-12 «좋아 · 글이 길어지는 건 줄바꿈») */
+    private fun showFailure(e: DeviceRegisteredEvent.Failure) {
+        val retry = {   // 403 은 코드가 살아 있다(GatewayService 가 남겨 둠) → 같은 코드로 · 없으면 새 코드 받으러
+            if (gatewaySettings.privateToken.isNullOrBlank()) actionWebLink()
+            else { gatewaySettings.enabled = true; requestPermissionsAndStart() }
+        }
+        val openUrl = { url: String ->
+            try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            catch (x: Exception) { Toast.makeText(requireContext(), getString(R.string.im_web_link_no_browser), Toast.LENGTH_LONG).show() }
+        }
+        val openSettings = { action: String ->
+            try { startActivity(Intent(action)) } catch (x: Exception) { startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS)) }
+        }
+        val s = { id: Int -> getString(id) }
+        when (e.why) {
+            "no_code", "no_such_code", "already_used", "revoked", "expired", "too_many_attempts", "no_uid" ->
+                showNotice(e.why, s(R.string.im_fail_code_title), s(R.string.im_fail_code_body), s(R.string.im_fail_code_btn), { actionWebLink() })
+            "sim_number_unreadable" ->
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                    // «허용 안함»을 한 번 누르면 안드로이드가 다시 묻지 않는다(공기계 실측) → 그땐 앱 설정 권한 화면을 열고, 돌아오면 저절로 다시 연결
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE))
+                        showNotice("perm", s(R.string.im_fail_perm_title), s(R.string.im_fail_perm_body), s(R.string.im_fail_perm_btn), retry)
+                    else
+                        showNotice("perm", s(R.string.im_fail_perm_title), s(R.string.im_fail_perm_body_settings), s(R.string.im_fail_perm_btn),
+                            { retryOnResume = true; openAppDetails() })
+                } else
+                    showNotice(e.why, s(R.string.im_fail_nosim_title), s(R.string.im_fail_nosim_body), s(R.string.im_notice_retry), retry, danger = true)
+            "sim_mismatch" ->
+                showNotice(e.why, s(R.string.im_fail_mismatch_title), s(R.string.im_fail_mismatch_body), s(R.string.im_fail_mismatch_btn),
+                    { openUrl(SETUP_ACCT_URL) }, s(R.string.im_notice_retry), retry, danger = true,
+                    nums = if (e.phoneLast4 != null && e.accountLast4 != null) e.phoneLast4 to e.accountLast4 else null)
+            "user_has_no_phone" ->
+                showNotice(e.why, s(R.string.im_fail_nophone_title), s(R.string.im_fail_nophone_body), s(R.string.im_fail_nophone_btn),
+                    { openUrl(SETUP_ACCT_URL) }, s(R.string.im_notice_retry), retry)
+            "network" ->
+                showNotice(e.why, s(R.string.im_fail_net_title), s(R.string.im_fail_net_body), s(R.string.im_fail_net_btn),
+                    { openSettings(Settings.ACTION_WIFI_SETTINGS) }, s(R.string.im_notice_retry), retry)
+            "ip_blocked" ->
+                showNotice(e.why, s(R.string.im_fail_ip_title), s(R.string.im_fail_ip_body), s(R.string.im_fail_ip_btn),
+                    { openSettings(Settings.ACTION_DATA_USAGE_SETTINGS) }, s(R.string.im_fail_code_btn), { actionWebLink() })
+            "server" ->
+                showNotice(e.why, s(R.string.im_fail_server_title), s(R.string.im_fail_server_body), s(R.string.im_notice_retry), retry)
+            else ->   // 이름표를 모르는 실패(옛 대리 등) — 서버 문장 그대로 + 다시 연결
+                showNotice(e.why, s(R.string.im_connect_failed_title), e.reason, s(R.string.im_notice_retry), retry)
+        }
     }
 
     private fun toastRegisterFailed(th: Throwable) {
@@ -890,6 +979,7 @@ class HomeFragment : Fragment() {
         private const val RECENT_LIMIT = 3
         private const val SETUP_STEPS = 3
         private const val WEB_LINK_URL = "https://insuremate.co.kr/sms-connect.html"
+        private const val SETUP_ACCT_URL = "https://insuremate.co.kr/setup.html?tab=acct"   // 내 설정 › 계정 = 인증 숫자로 번호 바꾸는 곳
 
         @JvmStatic
         fun newInstance() = HomeFragment()

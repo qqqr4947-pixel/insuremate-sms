@@ -170,7 +170,8 @@ class GatewayService(
             // 서버가 거절한 것(4xx)은 같은 요청을 다시 해도 같은 답이다 → 전부 멈추고 연결 단계로. 네트워크 끊김·서버 5xx 만 다시 한다.
             val status = (th as? ClientRequestException)?.response?.status
             if (registerMode == RegistrationMode.Anonymous && status != null && status.value in 400..499) {
-                this.settings.privateToken = null
+                // 11-12 · 코드가 죽은 것(401·429)만 코드를 지운다. 403(유심·번호·권한)은 코드가 살아 있어 [다시 연결]이 같은 코드로 한다
+                if (status.value != 403) this.settings.privateToken = null
                 this.settings.enabled = false
             }
             // 서버 안내 글({"message":"…"})만 보여 준다 — 전엔 요청 주소·영어가 섞인 통째 글이 떴다
@@ -178,10 +179,20 @@ class GatewayService(
             // 11-12 · «인터넷»은 정말 서버에 못 닿았을 때(IOException)만 말한다 — 전엔 모든 실패에 «인터넷을 확인»이 붙어 번호 다름도 인터넷 탓으로 읽혔다
             val reason = if (th is java.io.IOException) "인터넷에 닿지 않았어요. 와이파이나 데이터를 켜고 다시 눌러 주세요"
                 else Regex("\"message\"\\s*:\\s*\"([^\"]+)\"").find(raw)?.groupValues?.get(1) ?: raw
+            fun field(name: String) = Regex("\"$name\"\\s*:\\s*\"([^\"]+)\"").find(raw)?.groupValues?.get(1)
+            val why = when {
+                th is java.io.IOException -> "network"
+                status?.value == 429 -> field("why") ?: "ip_blocked"
+                status != null -> field("why")
+                else -> "server"
+            }
             events.emit(
                 DeviceRegisteredEvent.Failure(
                     api.hostname,
-                    reason
+                    reason,
+                    why,
+                    field("phoneLast4"),
+                    field("accountLast4"),
                 )
             )
 

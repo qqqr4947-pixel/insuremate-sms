@@ -14,6 +14,10 @@ sealed class DeviceRegisteredEvent(
     class Failure(
         server: String,
         val reason: String,
+        // 11-12 · 이유 이름표(대리가 보내는 why · 앱이 정한 network/server) — 홈이 이유별 창을 고른다
+        val why: String? = null,
+        val phoneLast4: String? = null,
+        val accountLast4: String? = null,
     ) : DeviceRegisteredEvent(server)
 
     companion object {

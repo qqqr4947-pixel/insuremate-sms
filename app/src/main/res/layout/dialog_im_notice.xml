@@ -13,6 +13,7 @@
     android:paddingBottom="20dp">
 
     <ImageView
+        android:id="@+id/iconNotice"
         android:layout_width="@dimen/im_icon_chip"
         android:layout_height="@dimen/im_icon_chip"
         android:background="@drawable/bg_im_icon"
@@ -31,6 +32,53 @@
         android:textSize="20sp"
         android:textStyle="bold"
         tools:text="폰을 연결하지 못했어요" />
+
+    <!-- 번호 다름일 때만: 이 폰 ••••5678 ≠ 인슈어메이트 ••••1234 -->
+    <LinearLayout
+        android:id="@+id/layoutNoticeNums"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/textNoticePhone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_im_field"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textColor="@color/im_ink"
+            android:textSize="16sp"
+            tools:text="이 폰\n••••5678" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:importantForAccessibility="no"
+            android:text="≠"
+            android:textColor="@color/im_danger_fg"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textNoticeAccount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_im_field"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textColor="@color/im_ink"
+            android:textSize="16sp"
+            tools:text="인슈어메이트\n••••1234" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textNoticeBody"
@@ -56,4 +104,16 @@
         android:textStyle="bold"
         app:cornerRadius="@dimen/im_btn_r"
         app:elevation="0dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonNoticeSecond"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="4dp"
+        android:letterSpacing="0"
+        android:text="@string/im_notice_close"
+        android:textAllCaps="false"
+        android:textColor="@color/im_sub"
+        android:textSize="15sp" />
 </LinearLayout>
