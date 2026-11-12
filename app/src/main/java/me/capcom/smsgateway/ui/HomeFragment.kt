@@ -231,11 +231,7 @@ class HomeFragment : Fragment() {
                     gatewaySettings.deviceId ?: getString(R.string.n_a)
 
                 // 11-12 · 잠깐 뜨는 알림은 두 줄에서 잘려(«…») 이유를 끝까지 못 읽었다 → 닫을 때까지 남는 창에 이유 전체
-                androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setTitle(R.string.im_connect_failed_title)
-                    .setMessage(event.reason)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
+                showNotice(getString(R.string.im_connect_failed_title), event.reason)
                 renderCards()
             }
         }
@@ -805,6 +801,17 @@ class HomeFragment : Fragment() {
             getString(R.string.to_apply_the_changes_restart_the_app_using_the_button_below),
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    /** 안내 창 — 홈 카드와 같은 모양(dialog_im_notice) · 닫을 때까지 남아 이유를 끝까지 읽는다 */
+    private fun showNotice(title: String, body: String) {
+        val view = layoutInflater.inflate(R.layout.dialog_im_notice, null)
+        view.findViewById<android.widget.TextView>(R.id.textNoticeTitle).text = title
+        view.findViewById<android.widget.TextView>(R.id.textNoticeBody).text = body
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext()).setView(view).create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)   // 창 기본 네모 바탕을 빼야 카드의 둥근 모서리가 보인다
+        view.findViewById<View>(R.id.buttonNoticeOk).setOnClickListener { dialog.dismiss() }
+        dialog.show()
     }
 
     private fun toastRegisterFailed(th: Throwable) {

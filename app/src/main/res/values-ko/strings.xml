@@ -256,6 +256,7 @@
     <!-- 11-12 · 연결된 화면의 «꼭 알아 두세요» -->
     <string name="im_keep_title">꼭 알아 두세요</string>
     <string name="im_connect_failed_title">폰을 연결하지 못했어요</string>
+    <string name="im_notice_ok">확인</string>
     <string name="im_keep_body">· 문자를 보내려면 폰과 이 앱을 켜 두세요. 최근 앱 목록에서 지우지 마세요.\n· 전화 카드는 고객 관리에 번호가 등록된 고객이 전화할 때만 떠요.\n· 화면이 잠겨 있으면 이름 대신 인슈어메이트 고객이라고만 보여요. 잠금을 풀면 자세히 보여요.</string>
     <string name="im_caller_card_sub">고객이 전화하면 누군지 바로 떠요</string>
     <string name="im_caller_card_step">켜기 %1$d / 3 · 한 번 더 눌러 주세요</string>

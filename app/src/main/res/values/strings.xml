@@ -282,6 +282,7 @@
     <string name="im_caller_card_title">Customer card on calls</string>
     <string name="im_keep_title">Good to know</string>
     <string name="im_connect_failed_title">Couldn\'t connect this phone</string>
+    <string name="im_notice_ok">OK</string>
     <string name="im_keep_body">· Keep the phone and this app on to send texts. Don\'t swipe it away from recent apps.\n· The call card appears only for customers whose number is saved in InsureMate.\n· While the screen is locked, only \"InsureMate customer\" is shown. Unlock to see details.</string>
     <string name="im_caller_card_sub">Shows who is calling right away</string>
     <string name="im_caller_card_step">Step %1$d of 3 · tap again</string>
