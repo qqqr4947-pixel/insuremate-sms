@@ -90,6 +90,18 @@
         android:textSize="16sp"
         tools:text="이 폰의 유심 번호를 읽지 못했어요. 유심이 꽂혀 있는지 확인한 뒤 다시 연결해 주세요" />
 
+    <!-- im16 · 설정 화면에서 무엇을 켜는지 실제 화면 그림(있을 때만) -->
+    <ImageView
+        android:id="@+id/imageNotice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/bg_im_field"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonNoticeOk"
         android:layout_width="match_parent"

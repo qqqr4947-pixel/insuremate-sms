@@ -72,6 +72,7 @@ class App: Application() {
         EventsReceiver.register(this)
 
         get<OrchestratorService>().start(this, true)
+        me.capcom.smsgateway.modules.update.UpdateNotifyWorker.start(this)
     }
 
     val gatewayService: GatewayService by inject()

@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import me.capcom.smsgateway.modules.calls.CallerCardOverlay
 import me.capcom.smsgateway.modules.calls.CallerCardPass
 import me.capcom.smsgateway.modules.update.AppUpdate
 import kotlin.concurrent.thread
@@ -159,7 +160,7 @@ class HomeFragment : Fragment() {
                 MainActivity.TAB_INDEX_SETTINGS
         }
 
-        binding.buttonPermission.setOnClickListener { requestPermissionsAndStart() }
+        binding.buttonPermission.setOnClickListener { setupStage = SETUP_PERMISSION; requestPermissionsAndStart() }
         binding.buttonAppSettings.setOnClickListener { openAppDetails() }
         binding.buttonTypeCode.setOnClickListener {
             binding.layoutTypeCode.isVisible = true
@@ -232,7 +233,15 @@ class HomeFragment : Fragment() {
 
                 // 11-12 · 잠깐 뜨는 알림은 두 줄에서 잘려(«…») 이유를 끝까지 못 읽었다 → 이유별 창 + 그 자리에서 고치는 단추
                 showFailure(event)
+                setupStage = SETUP_NONE; batteryLeft = false   // 실패 창이 다음 걸음을 맡는다
                 renderCards()
+            }
+        }
+        // im16 · 연결되면 이어서 «전화 오면 누군지 보여 드릴까요?» (한 번만)
+        viewLifecycleOwner.lifecycleScope.launch {
+            events.collect<DeviceRegisteredEvent.Success> {
+                setupStage = SETUP_NONE; batteryLeft = false
+                if (isResumed) offerCallerCard()   // 배터리 창·브라우저가 앞에 있으면 돌아온 onResume 이 묻는다
             }
         }
 
@@ -289,6 +298,18 @@ class HomeFragment : Fragment() {
 
         renderMyNumber()
         renderCards()
+        OverlayWatch.stop()   // 직접 뒤로 돌아왔으면 지켜보기는 그만
+        // im14 · 고객 카드 설정 중 «다른 앱 위에 표시»에서 돌아왔으면 곧바로 시험 카드까지
+        if (callerBackFromOverlay && callerCardStep() == 0) continueCallerCard()
+        else if (callerBackFromOverlay && callerCardStep() != 0) callerBackFromOverlay = false   // 안 켜고 돌아옴 · 나중에 엉뚱한 때 시험 카드 X
+        // im16 · 배터리 창에서 돌아왔으면 다음 걸음(연결)으로 · 거절했으면 흐름을 멈춘다(카드가 남는다)
+        // (허락 창 결과 바로 뒤의 onResume 은 배터리 창이 아직 안 뜬 때라 건너뛴다 — 한 번 떠났다 온 뒤에만 잰다)
+        if (setupStage == SETUP_BATTERY && batteryLeft) {
+            batteryLeft = false
+            if (isIgnoringBatteryOptimizations()) continueSetup() else setupStage = SETUP_NONE
+        }
+        // im16 · 이미 연결된 사람(새 판으로 올린 사람 포함)에게도 한 번 묻는다
+        if (setupStage == SETUP_NONE && MainActivity.peekPendingConnectCode() == null) offerCallerCard()
         renderLocalServer()
         refreshCounters()
 
@@ -332,12 +353,21 @@ class HomeFragment : Fragment() {
         binding.cardConnect.isVisible = step == 3
         binding.cardStatus.isVisible = ready
         // im13 · 전화 오면 고객 카드 — 세 허락 중 빠진 게 있으면 [켜기] 하나로 차례로 연다(안드 10+ · 연결된 사람만)
+        // im14 · 세 허락이 다 켜져도 시험 카드가 실제로 떴는지(testOk)까지 봐야 끝 — 허락이 반만 켜진 폰이 있었다(11-02 실측)
         val callerStep = callerCardStep()
-        binding.cardCallerCard.isVisible = ready && registered && callerStep != 0
-        if (callerStep != 0) {
-            binding.textCallerCardSub.text = if (callerStep == 1) getString(R.string.im_caller_card_sub)
-            else getString(R.string.im_caller_card_step, callerStep)
+        val testOk = callerTestOk()
+        binding.cardCallerCard.isVisible = ready && registered && (callerStep != 0 || testOk != true)
+        binding.textCallerCardSub.text = when {
+            callerStep == 1 -> getString(R.string.im_caller_card_sub1)
+            callerStep != 0 -> getString(R.string.im_caller_card_step, callerStep)
+            testOk == false -> getString(R.string.im_caller_card_retry)
+            else -> getString(R.string.im_caller_card_try)
         }
+        binding.buttonCallerCard.text = getString(when {
+            callerStep != 0 -> R.string.im_overlay_button
+            testOk == false -> R.string.im_caller_card_retry_btn
+            else -> R.string.im_caller_card_try_btn
+        })
         // im11 · PC 「전화 걸기」 — 연결된 사람만 · «다른 앱 위에 표시»가 꺼져 있을 때만(고객 카드 카드가 같은 허락을 열고 있으면 숨는다)
         binding.cardOverlay.isVisible = ready && registered && !canDrawOverlays() && !binding.cardCallerCard.isVisible
         binding.cardLocalServer.isVisible = ready && usesLocal
@@ -514,7 +544,62 @@ class HomeFragment : Fragment() {
             return
         }
         binding.editConnectCode.setText(code)
+        setupStage = SETUP_PERMISSION   // 코드로 들어와도 허락 → 배터리까지 이어서
         actionConnect()
+    }
+
+    /** im16 · 한 번에 켜기 — 허락 다음 걸음을 저절로 연다: 배터리 창 → (코드 없으면) 연결 화면.
+     *  연결이 되면 DeviceRegisteredEvent.Success 가 전화 카드 묻기로 잇는다 */
+    private fun continueSetup() {
+        if (_binding == null) return
+        when {
+            !hasSendPermission() -> setupStage = SETUP_NONE
+            !isIgnoringBatteryOptimizations() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+                setupStage = SETUP_BATTERY
+                batteryLeft = false
+                requestIgnoreBatteryOptimizations()
+            }
+            gatewaySettings.registrationInfo == null && !localServerSettings.enabled &&
+                gatewaySettings.privateToken.isNullOrBlank() -> {
+                setupStage = SETUP_NONE
+                actionWebLink()   // 로그인 확인 → 코드를 실어 이 앱으로 돌아온다
+            }
+            else -> setupStage = SETUP_NONE   // 연결은 이미 진행 중 · 끝나면 Success 가 잇는다
+        }
+    }
+
+    /** im16 · «전화 오면 누군지 보여 드릴까요?» — 연결된 폰 · 안드 10+ · 아직 안 켠 사람에게 한 번만 */
+    private fun offerCallerCard() {
+        if (_binding == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        if (gatewaySettings.registrationInfo == null) return
+        if (callerCardStep() == 0) return   // 이미 켠 사람(옛 판에서 켬 포함)은 묻지 않는다 · 카드가 시험을 맡는다
+        val p = requireContext().getSharedPreferences(CALLER_PREFS, Context.MODE_PRIVATE)
+        if (p.getBoolean(CALLER_OFFERED, false)) return
+        if (noticeDialog?.isShowing == true) return
+        p.edit().putBoolean(CALLER_OFFERED, true).apply()
+        showNotice(
+            "caller_offer", getString(R.string.im_caller_offer_title), getString(R.string.im_caller_offer_body),
+            getString(R.string.im_caller_offer_ok), { continueCallerCard() },
+            getString(R.string.im_caller_offer_later),
+            icon = R.drawable.ic_im_phone, calm = true,
+        )
+    }
+
+    /** im16 · 설정 «다른 앱 위에 표시»는 안드 11+ 에서 우리 앱이 아니라 «전체 목록»으로 열린다(S20U 실측 11-13)
+     *  → 실제 화면 그림으로 어느 줄을 켜는지 먼저 보여 주고, 켜는 순간 이 앱으로 저절로 돌아온다 */
+    private fun guideOverlay() {
+        // 이미 켜졌는데 카드가 안 뜬 폰(허락 반만 켜짐 · 11-02 실측) = «껐다 켜기» · 그때는 지켜보기를 안 한다(바로 끌려 돌아온다)
+        val retry = canDrawOverlays()
+        showNotice(
+            "overlay_guide", getString(R.string.im_overlay_guide_title),
+            getString(if (retry) R.string.im_overlay_guide_retry else R.string.im_overlay_guide_body),
+            getString(R.string.im_overlay_guide_ok), {
+                callerBackFromOverlay = true
+                requestOverlay()
+                if (!retry) OverlayWatch.start(requireContext().applicationContext)
+            },
+            image = R.drawable.im_guide_overlay, calm = true,
+        )
     }
 
     /** 「QR 찍기」 — PC 「폰 연결하기」의 QR(코드가 실린 설치 주소 · /sms?c=코드)을 카메라로 읽어 코드를 채우고 바로 연결한다 (im10 · 박 대표 2026-09-21) */
@@ -566,12 +651,37 @@ class HomeFragment : Fragment() {
                 callerRoleRequest.launch(role.createRequestRoleIntent(android.app.role.RoleManager.ROLE_CALL_SCREENING))
             }
             2 -> contactsPermissionRequest.launch(Manifest.permission.READ_CONTACTS)
-            3 -> requestOverlay()
+            3 -> guideOverlay()
             else -> {
-                CallerCardPass.refresh(requireContext())
+                val ctx = requireContext()
+                CallerCardPass.refresh(ctx)
+                // 시험에 실패한 뒤 누른 [다시 켜기] = 스위치 화면을 다시 연다 · 돌아오면 onResume 이 시험을 한 번 더 한다
+                if (callerTestOk() == false && !callerBackFromOverlay) {
+                    guideOverlay()
+                    return
+                }
+                callerBackFromOverlay = false
+                val ok = CallerCardOverlay.showTest(ctx)
+                ctx.getSharedPreferences(CALLER_PREFS, Context.MODE_PRIVATE).edit().putBoolean(CALLER_TEST_OK, ok).apply()
+                if (ok) Toast.makeText(ctx, R.string.im_caller_card_ok, Toast.LENGTH_LONG).show()
                 renderCards()
             }
         }
+    }
+
+    /** null = 아직 시험 안 함 · true = 시험 카드가 떴다 · false = 안 떴다 */
+    private fun callerTestOk(): Boolean? {
+        val p = requireContext().getSharedPreferences(CALLER_PREFS, Context.MODE_PRIVATE)
+        return if (p.contains(CALLER_TEST_OK)) p.getBoolean(CALLER_TEST_OK, false) else null
+    }
+
+    private var callerBackFromOverlay = false
+    private var setupStage = SETUP_NONE
+    private var batteryLeft = false
+
+    override fun onPause() {
+        super.onPause()
+        if (setupStage == SETUP_BATTERY) batteryLeft = true
     }
 
     // im13 · 앱 안 업데이트 — 새 판이면 맨 위 카드 · [업데이트] → (처음 한 번 설치 허용) → 받기·지문 대조 → 설치 화면
@@ -784,6 +894,9 @@ class HomeFragment : Fragment() {
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.READ_PHONE_NUMBERS.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU },
+                // im16 · 안드 13+ 은 알림도 따로 묻는다 — 없으면 «새 판이 있어요» 알림이 조용히 버려진다(11-13 실측)
+                // (처음 [시작하기] 흐름에서만 — 실패 고치는 중간에 끼어들지 않게)
+                Manifest.permission.POST_NOTIFICATIONS.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && setupStage == SETUP_PERMISSION },
             )
                 .filterNotNull()
                 .filter {
@@ -797,6 +910,7 @@ class HomeFragment : Fragment() {
             start()
             renderCards()
             renderMyNumber()
+            if (setupStage == SETUP_PERMISSION) continueSetup()
             return
         }
 
@@ -825,6 +939,7 @@ class HomeFragment : Fragment() {
         primary: String, onPrimary: () -> Unit,
         second: String = getString(R.string.im_notice_close), onSecond: (() -> Unit)? = null,
         danger: Boolean = false, nums: Pair<String, String>? = null,
+        icon: Int? = null, image: Int? = null, calm: Boolean = false,   // im16 · 묻기·안내 창 = 파란 칩 + 실제 화면 그림
     ) {
         if (noticeDialog?.isShowing == true) {
             if (noticeWhy == why) return
@@ -834,8 +949,14 @@ class HomeFragment : Fragment() {
         view.findViewById<android.widget.TextView>(R.id.textNoticeTitle).text = title
         view.findViewById<android.widget.TextView>(R.id.textNoticeBody).text = body
         view.findViewById<android.widget.ImageView>(R.id.iconNotice).apply {
-            backgroundTintList = ContextCompat.getColorStateList(requireContext(), if (danger) R.color.im_danger_bg else R.color.im_warn_bg)
-            imageTintList = ContextCompat.getColorStateList(requireContext(), if (danger) R.color.im_danger_fg else R.color.im_warn_fg)
+            backgroundTintList = ContextCompat.getColorStateList(requireContext(),
+                if (danger) R.color.im_danger_bg else if (calm) R.color.im_blue_tint else R.color.im_warn_bg)
+            imageTintList = ContextCompat.getColorStateList(requireContext(),
+                if (danger) R.color.im_danger_fg else if (calm) R.color.im_on_tint else R.color.im_warn_fg)
+            icon?.let { setImageResource(it) }
+        }
+        image?.let {
+            view.findViewById<android.widget.ImageView>(R.id.imageNotice).apply { setImageResource(it); isVisible = true }
         }
         nums?.let { (phone, account) ->
             view.findViewById<View>(R.id.layoutNoticeNums).isVisible = true
@@ -930,6 +1051,9 @@ class HomeFragment : Fragment() {
         if (_binding != null) {
             renderCards()
             renderMyNumber()
+            if (setupStage == SETUP_PERMISSION) {
+                if (result[Manifest.permission.SEND_SMS] == false) setupStage = SETUP_NONE else continueSetup()
+            }
         }
     }
 
@@ -978,6 +1102,13 @@ class HomeFragment : Fragment() {
     companion object {
         private const val RECENT_LIMIT = 3
         private const val SETUP_STEPS = 3
+        private const val CALLER_PREFS = "im_caller_card"
+        private const val CALLER_TEST_OK = "testOk"
+        private const val CALLER_OFFERED = "offered"
+        // im16 · 한 번에 켜기 — 지금 어느 창을 기다리나
+        private const val SETUP_NONE = 0
+        private const val SETUP_PERMISSION = 1
+        private const val SETUP_BATTERY = 2
         private const val WEB_LINK_URL = "https://insuremate.co.kr/sms-connect.html"
         private const val SETUP_ACCT_URL = "https://insuremate.co.kr/setup.html?tab=acct"   // 내 설정 › 계정 = 인증 숫자로 번호 바꾸는 곳
 

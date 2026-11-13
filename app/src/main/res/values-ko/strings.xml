@@ -35,9 +35,9 @@
     <string name="im_no_limit">한도 없음</string>
     <string name="im_sending_on">문자 보내기 켜짐</string>
     <string name="im_sending_off">문자 보내기 꺼짐</string>
-    <string name="im_permission_title">문자 보내기 권한</string>
-    <string name="im_permission_sub">이 앱이 문자를 보내려면 필요해요</string>
-    <string name="im_permission_button">권한 켜기</string>
+    <string name="im_permission_title">처음 한 번만 준비해요</string>
+    <string name="im_permission_sub">뜨는 창마다 허용만 누르면 끝까지 이어져요</string>
+    <string name="im_permission_button">시작하기</string>
     <string name="im_battery_title">배터리 최적화 제외</string>
     <string name="im_battery_sub">폰이 잠들어도 문자가 나가게 해요</string>
     <string name="im_battery_button">제외하기</string>
@@ -260,6 +260,14 @@
     <string name="im_keep_body">· 문자를 보내려면 폰과 이 앱을 켜 두세요. 최근 앱 목록에서 지우지 마세요.\n· 전화 카드는 고객 관리에 번호가 등록된 고객이 전화할 때만 떠요.\n· 화면이 잠겨 있으면 이름 대신 인슈어메이트 고객이라고만 보여요. 잠금을 풀면 자세히 보여요.</string>
     <string name="im_caller_card_sub">고객이 전화하면 누군지 바로 떠요</string>
     <string name="im_caller_card_step">켜기 %1$d / 3 · 한 번 더 눌러 주세요</string>
+    <string name="im_caller_card_sub1">고객이 전화하면 누군지 바로 떠요 · 다음 창에서 에이닷 말고 문자메이트를 고르세요</string>
+    <string name="im_caller_card_try">다 켜졌어요 · 시험 카드를 한 번 띄워 볼게요</string>
+    <string name="im_caller_card_try_btn">시험</string>
+    <string name="im_caller_card_retry">카드가 아직 안 떠요 · 다시 켜기를 누르고 스위치를 껐다 켜 주세요</string>
+    <string name="im_caller_card_retry_btn">다시 켜기</string>
+    <string name="im_caller_card_ok">카드가 떴어요 · 이제 고객이 전화하면 이렇게 떠요</string>
+    <string name="caller_card_test_name">시험 카드</string>
+    <string name="caller_card_test_alert">고객이 전화하면 여기에 이름과 약속이 떠요</string>
     <string name="im_update_title">새 판이 있어요</string>
     <string name="im_update_sub">%1$s · 누르면 받아서 설치 화면이 떠요</string>
     <string name="im_update_button">업데이트</string>
@@ -269,4 +277,17 @@
     <string name="im_update_allow_body">다음 화면 목록에서 InsureMateSMS 스위치를 켜고, 뒤로 돌아오면 설치 화면이 떠요</string>
     <string name="im_update_allow_ok">켜러 가기</string>
     <string name="im_update_whatsnew_title">이번에 바뀐 것</string>
+    <!-- im16 · 한 번에 켜기 -->
+    <string name="im_caller_offer_title">전화 오면 누군지 보여 드릴까요?</string>
+    <string name="im_caller_offer_body">고객 관리에 번호가 있는 고객이 전화하면 벨이 울릴 때 누군지 바로 떠요.\n뜨는 창에서 InsureMateSMS 를 고르고 허용을 누르면 끝나요.</string>
+    <string name="im_caller_offer_ok">켜기</string>
+    <string name="im_caller_offer_later">나중에</string>
+    <string name="im_overlay_guide_title">마지막 하나만 켜 주세요</string>
+    <string name="im_overlay_guide_body">다음 화면 목록을 아래로 내려 InsureMateSMS 를 찾고 스위치를 켜 주세요.\n켜면 저절로 이 앱으로 돌아와요.</string>
+    <string name="im_overlay_guide_retry">다음 화면 목록에서 InsureMateSMS 스위치를 껐다가 다시 켜 주세요.
+켠 뒤 뒤로 돌아오면 시험 카드가 떠요.</string>
+    <string name="im_overlay_guide_ok">켜러 가기</string>
+    <string name="im_update_notify_channel">새 판 알림</string>
+    <string name="im_update_notify_title">문자 앱 새 판이 있어요</string>
+    <string name="im_update_notify_body">눌러서 업데이트해 주세요 · v%1$s</string>
 </resources>

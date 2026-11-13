@@ -33,10 +33,19 @@ object CallerCardOverlay {
     private const val AUTO_CLOSE_MS = 30_000L
     private var shown: View? = null
 
-    fun show(context: Context, cards: JSONArray) {
+    /** im14 · 설정을 마치면 한 번 띄워 보는 시험 카드 — 실제로 화면 위에 그려졌는지(true)를 돌려준다 */
+    fun showTest(context: Context): Boolean {
+        val card = JSONObject()
+            .put("name", context.getString(R.string.caller_card_test_name))
+            .put("alerts", JSONArray().put(JSONObject().put("text", context.getString(R.string.caller_card_test_alert)).put("tone", "blue")))
+        return show(context, JSONArray().put(card))
+    }
+
+    /** 화면 위에 그렸으면 true · 허락이 반만 켜졌거나(10-30 실측) 그리기가 막히면 false */
+    fun show(context: Context, cards: JSONArray): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
             Log.w(TAG, "다른 앱 위에 표시가 꺼져 있다")
-            return
+            return false
         }
         hide(context)
         val ui = ContextThemeWrapper(context, R.style.Theme_SmsGateway)
@@ -65,8 +74,10 @@ object CallerCardOverlay {
             shown = v
             v.postDelayed({ if (shown === v) hide(context) }, AUTO_CLOSE_MS)
             if (locked) whenUnlocked(context, v) { if (shown === v) show(context, cards) }
+            return true
         } catch (e: Throwable) {
             Log.w(TAG, "카드를 못 띄웠다", e)
+            return false
         }
     }
 
@@ -138,10 +149,24 @@ object CallerCardOverlay {
             val a = alerts.optJSONObject(i) ?: continue
             alertBox.addView(alert(ui, a.optString("text"), a.optString("tone")))
         }
-        val list = c.optJSONArray("rows") ?: JSONArray()
-        for (i in 0 until list.length()) {
-            val pair = list.optJSONArray(i) ?: continue
-            rows.addView(row(ui, pair.optString(0), pair.optString(1)))
+        // im14 · 서버가 묶음(groups · 사용자가 고른 3개까지)을 주면 묶음으로 · 옛 서버면 «이름 · 값» 줄로
+        val groups = c.optJSONArray("groups")
+        if (groups != null && groups.length() > 0) {
+            for (i in 0 until groups.length()) {
+                val g = groups.optJSONObject(i) ?: continue
+                rows.addView(groupTitle(ui, g.optString("title")))
+                val lines = g.optJSONArray("lines") ?: JSONArray()
+                for (j in 0 until lines.length()) {
+                    val ln = lines.optJSONObject(j) ?: continue
+                    rows.addView(groupLine(ui, ln.optString("d"), ln.optString("l"), ln.optString("r")))
+                }
+            }
+        } else {
+            val list = c.optJSONArray("rows") ?: JSONArray()
+            for (i in 0 until list.length()) {
+                val pair = list.optJSONArray(i) ?: continue
+                rows.addView(row(ui, pair.optString(0), pair.optString(1)))
+            }
         }
         val url = c.optString("url")
         if (url.startsWith("https://")) {
@@ -161,6 +186,28 @@ object CallerCardOverlay {
             })
             addView(text(ui, value, R.color.im_ink, 14.5f).apply {
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+        }
+
+    /** 묶음 제목 — 작은 회색 굵은 글 · 위 묶음과 사이를 띄운다 */
+    private fun groupTitle(ui: Context, s: String): View =
+        text(ui, s, R.color.im_sub, 12.5f).apply {
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setPadding(0, dp(ui, 12), 0, 0)
+        }
+
+    /** 묶음 한 줄 — [날짜] 내용 [오른쪽 값] */
+    private fun groupLine(ui: Context, d: String, l: String, r: String): View =
+        LinearLayout(ui).apply {
+            orientation = LinearLayout.HORIZONTAL
+            if (d.isNotBlank()) addView(text(ui, d, R.color.im_sub, 13.5f).apply {
+                setPadding(0, dp(ui, 4), dp(ui, 8), 0)
+            })
+            addView(text(ui, l, R.color.im_ink, 15f).apply {
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            if (r.isNotBlank()) addView(text(ui, r, R.color.im_body, 14f).apply {
+                setPadding(dp(ui, 8), dp(ui, 4), 0, 0)
             })
         }
 

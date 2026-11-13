@@ -314,6 +314,14 @@
     <string name="im_keep_body">· Keep the phone and this app on to send texts. Don\'t swipe it away from recent apps.\n· The call card appears only for customers whose number is saved in InsureMate.\n· While the screen is locked, only \"InsureMate customer\" is shown. Unlock to see details.</string>
     <string name="im_caller_card_sub">Shows who is calling right away</string>
     <string name="im_caller_card_step">Step %1$d of 3 · tap again</string>
+    <string name="im_caller_card_sub1">Shows who is calling · pick SMSmate in the next window</string>
+    <string name="im_caller_card_try">All set · let us show a test card once</string>
+    <string name="im_caller_card_try_btn">Test</string>
+    <string name="im_caller_card_retry">The card did not show · tap Turn on again and switch it off and on</string>
+    <string name="im_caller_card_retry_btn">Turn on again</string>
+    <string name="im_caller_card_ok">The card showed · calls from customers will look like this</string>
+    <string name="caller_card_test_name">Test card</string>
+    <string name="caller_card_test_alert">Name and next appointment show here when a customer calls</string>
     <string name="im_update_title">New version available</string>
     <string name="im_update_sub">%1$s · tap to download and install</string>
     <string name="im_update_button">Update</string>
@@ -323,4 +331,17 @@
     <string name="im_update_allow_body">Turn on InsureMateSMS in the next list, then come back to install</string>
     <string name="im_update_allow_ok">Open settings</string>
     <string name="im_update_whatsnew_title">What\'s new</string>
+    <!-- im16 · one-flow setup -->
+    <string name="im_caller_offer_title">Show who is calling?</string>
+    <string name="im_caller_offer_body">When a customer saved in InsureMate calls, who it is shows while it rings.\nPick InsureMateSMS on the next window and tap Allow.</string>
+    <string name="im_caller_offer_ok">Turn on</string>
+    <string name="im_caller_offer_later">Later</string>
+    <string name="im_overlay_guide_title">Just one more switch</string>
+    <string name="im_overlay_guide_body">On the next screen scroll down to InsureMateSMS and turn its switch on.\nThe app comes back by itself.</string>
+    <string name="im_overlay_guide_retry">On the next screen turn the InsureMateSMS switch off and on again.
+Come back and a test card shows.</string>
+    <string name="im_overlay_guide_ok">Go turn it on</string>
+    <string name="im_update_notify_channel">New version</string>
+    <string name="im_update_notify_title">A new version of the SMS app is ready</string>
+    <string name="im_update_notify_body">Tap to update · v%1$s</string>
 </resources>

@@ -110,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         /** 인터넷에서 넘겨받은 연결 코드 — 홈이 한 번 꺼내 쓰면 비운다 */
         private var pendingConnectCode: String? = null
         fun takePendingConnectCode(): String? = pendingConnectCode.also { pendingConnectCode = null }
+        fun peekPendingConnectCode(): String? = pendingConnectCode
 
         fun starter(context: Context, tabIndex: Int): Intent {
             return Intent(context, MainActivity::class.java).apply {
